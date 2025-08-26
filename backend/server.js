@@ -3444,7 +3444,7 @@ app.get(/^(?!\/api\/).*/, (req, res) => {
 const startServer = async () => {
   try {
     await initDB()
-    app.listen(PORT, () => {
+    app.listen(PORT, "0.0.0.0", () => {
       logger.info(`Server running on port ${PORT}`)
     })
   } catch (error) {

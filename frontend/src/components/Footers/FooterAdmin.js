@@ -18,7 +18,7 @@ export default function FooterAdmin() {
                 >
                   DVShortyLinks
                 </a>
-                {" | "}Distributed by{" "}
+                {" | "}Designed, Developed & Maintained by{" "}
                 <a
                 href="https://www.zorvixetechnologies.com/"
                 className="text-blueGray-500 hover:text-blueGray-700 text-sm font-semibold py-1"

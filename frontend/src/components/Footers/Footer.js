@@ -164,7 +164,7 @@ export default function Footer() {
                 .
               </div>
               <div className="text-sm text-blueGray-500 font-semibold py-1">
-                Distributed by{" "}
+                Designed, Developed & Maintained by{" "}
                  <a
                 href="https://www.zorvixetechnologies.com/"
                   className="text-blueGray-500 hover:text-blueGray-800"

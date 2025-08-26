@@ -1,0 +1,233 @@
+/* src/views/admin/AdminSet.css */
+
+/* ---------- Theme tokens ---------- */
+:root {
+  --as-bg: #f6f8fc;
+  --as-surface: #ffffff;
+  --as-border: #e6e8ef;
+  --as-text: #1f2937;
+  --as-muted: #6b7280;
+
+  --as-primary: #0d6efd;      /* Bootstrap primary */
+  --as-primary-600: #0b5ed7;  /* hover */
+  --as-primary-700: #0a58ca;  /* active */
+  --as-focus: rgba(13, 110, 253, 0.15);
+
+  --as-shadow: 0 10px 25px rgba(17, 24, 39, 0.08);
+  --as-softshadow: 0 4px 12px rgba(17, 24, 39, 0.06);
+}
+
+/* ---------- Page wrapper ---------- */
+.admin-settings {
+  min-height: 100vh;
+  background: radial-gradient(1200px 600px at 10% -10%, #eef3ff, transparent 60%),
+              radial-gradient(1000px 600px at 110% 10%, #f3f7ff, transparent 60%),
+              var(--as-bg);
+  padding-bottom: 48px;
+}
+
+/* ---------- Cards ---------- */
+.admin-settings .card {
+  border: 1px solid var(--as-border);
+  background: var(--as-surface);
+  border-radius: 16px;
+  box-shadow: var(--as-shadow);
+  overflow: hidden;
+}
+
+.admin-settings .card:hover {
+  box-shadow: 0 12px 28px rgba(17, 24, 39, 0.1);
+  transform: translateY(-1px);
+  transition: box-shadow 220ms ease, transform 220ms ease;
+}
+
+/* Header with accent bar */
+.admin-settings .card-header {
+  position: relative;
+  background: linear-gradient(180deg, rgba(13,110,253,0.06) 0%, rgba(13,110,253,0.02) 100%);
+  border-bottom: 1px solid var(--as-border);
+  padding: 14px 16px 14px 20px;
+  font-weight: 600;
+}
+
+.admin-settings .card-header::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: linear-gradient(180deg, var(--as-primary) 0%, #6ea8fe 100%);
+}
+
+/* ---------- Forms ---------- */
+.admin-settings .form-label {
+  font-size: 0.9rem;
+  color: var(--as-muted);
+  margin-bottom: 6px;
+}
+
+.admin-settings .form-control {
+  border: 1px solid var(--as-border);
+  border-radius: 12px;
+  padding: 10px 12px;
+  box-shadow: inset 0 1px 0 rgba(17, 24, 39, 0.02);
+  transition: border-color 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+}
+
+.admin-settings .form-control::placeholder {
+  color: #9aa3af;
+}
+
+.admin-settings .form-control:focus {
+  border-color: var(--as-primary);
+  box-shadow: 0 0 0 0.25rem var(--as-focus);
+}
+
+.admin-settings textarea.form-control {
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* Row spacing polish */
+.admin-settings .row.g-3 > [class^="col"] {
+  display: grid;
+}
+
+/* ---------- Buttons ---------- */
+.admin-settings .btn-primary {
+  border-radius: 12px;
+  padding: 10px 16px;
+  font-weight: 600;
+  box-shadow: var(--as-softshadow);
+  transition: transform 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+}
+
+.admin-settings .btn-primary:hover {
+  background-color: var(--as-primary-600);
+  box-shadow: 0 8px 18px rgba(13, 110, 253, 0.24);
+  transform: translateY(-1px);
+}
+
+.admin-settings .btn-primary:active {
+  background-color: var(--as-primary-700);
+  transform: translateY(0);
+  box-shadow: var(--as-softshadow);
+}
+
+.admin-settings .btn-primary:disabled,
+.admin-settings .btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* ---------- Alerts ---------- */
+.admin-settings .alert {
+  border-radius: 12px;
+  border: 1px solid var(--as-border);
+  box-shadow: var(--as-softshadow);
+}
+
+.admin-settings .alert-success {
+  background: linear-gradient(0deg, #ecfdf5, #ecfdf5);
+  border-color: #bbf7d0;
+  color: #065f46;
+}
+
+.admin-settings .alert-danger {
+  background: linear-gradient(0deg, #fef2f2, #fef2f2);
+  border-color: #fecaca;
+  color: #7f1d1d;
+}
+
+/* ---------- Footer area ---------- */
+.admin-settings .card-footer {
+  background: #fafbff;
+  border-top: 1px solid var(--as-border);
+}
+
+/* ---------- Loading placeholders ---------- */
+.placeholder-wave .placeholder {
+  display: inline-block;
+  height: 1.2rem;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #e9edf5 25%, #f4f7fc 37%, #e9edf5 63%);
+  background-size: 400% 100%;
+  animation: as-shimmer 1.4s ease infinite;
+}
+@keyframes as-shimmer {
+  0%   { background-position: 100% 0; }
+  100% { background-position: 0 0; }
+}
+
+/* ---------- Focus visible for a11y ---------- */
+.admin-settings .form-control:focus-visible,
+.admin-settings .btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 0.3rem var(--as-focus);
+}
+
+/* ---------- Dark mode ---------- */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --as-bg: #0b1220;
+    --as-surface: #0f172a;
+    --as-border: #1e293b;
+    --as-text: #e2e8f0;
+    --as-muted: #94a3b8;
+    --as-focus: rgba(99, 179, 237, 0.25);
+    --as-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+    --as-softshadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  .admin-settings {
+    background: radial-gradient(1200px 600px at 10% -10%, rgba(49, 62, 99, 0.25), transparent 60%),
+                radial-gradient(1000px 600px at 110% 10%, rgba(49, 62, 99, 0.2), transparent 60%),
+                var(--as-bg);
+  }
+
+  .admin-settings .card {
+    background: var(--as-surface);
+    border-color: var(--as-border);
+  }
+
+  .admin-settings .card-header {
+    background: linear-gradient(180deg, rgba(99, 179, 237, 0.09) 0%, rgba(99, 179, 237, 0.03) 100%);
+    border-bottom-color: var(--as-border);
+  }
+
+  .admin-settings .form-control {
+    color: var(--as-text);
+    background: #0b1220;
+    border-color: var(--as-border);
+  }
+
+  .admin-settings .form-control::placeholder {
+    color: #8a93a5;
+  }
+
+  .admin-settings .card-footer {
+    background: #0b1220;
+    border-top-color: var(--as-border);
+  }
+
+  .admin-settings .alert-success {
+    background: rgba(16, 185, 129, 0.12);
+    border-color: rgba(16, 185, 129, 0.35);
+    color: #a7f3d0;
+  }
+
+  .admin-settings .alert-danger {
+    background: rgba(239, 68, 68, 0.12);
+    border-color: rgba(239, 68, 68, 0.35);
+    color: #fecaca;
+  }
+}
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .admin-settings .card,
+  .admin-settings .btn-primary,
+  .placeholder-wave .placeholder {
+    transition: none !important;
+    animation: none !important;
+  }
+}

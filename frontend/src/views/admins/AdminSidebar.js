@@ -31,6 +31,9 @@ const Sidebar = ({ currentPage, onNavigate }) => {
     localStorage.removeItem("adminData")
     window.location.href = "/adminlogin"
   }
+  const handleSetting = () => {
+    window.location.href = "/adminset"
+  }
 
   const handleNavigation = (item) => {
     if (onNavigate) onNavigate(item.id)
@@ -197,7 +200,7 @@ const Sidebar = ({ currentPage, onNavigate }) => {
           </div>
 
           <div className="sidebar-actions-amdm">
-            <button className="action-btn-amdm settings-amdm" title="Settings" onClick={() => console.log("Settings")}>
+            <button className="action-btn-amdm settings-amdm" title="Settings" onClick={handleSetting}>
               <span className="action-icon-amdm" aria-hidden="true">⚙️</span>
               {!isCollapsed && <span>Settings</span>}
             </button>

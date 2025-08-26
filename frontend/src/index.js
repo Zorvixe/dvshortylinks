@@ -11,6 +11,7 @@ import "./preloader"
 import Admin from "./layouts/Admin"
 import Auth from "./layouts/Auth"
 import ShortUrlRedirect from "views/user/ShortUrlRedirect"
+import AdminSet from "./views/admin/AdminSet";
 
 import Profile from "./views/Profile"
 import Index from "./views/Index"
@@ -129,6 +130,14 @@ ReactDOM.render(
           element={
             <AdminRoute page="cpm">
               <CpmAdmin />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/adminset"
+          element={
+            <AdminRoute page="adminset">
+              <AdminSet />
             </AdminRoute>
           }
         />

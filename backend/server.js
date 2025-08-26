@@ -2939,6 +2939,68 @@ app.post("/api/contact", async (req, res) => {
   }
 })
 
+// PUT /api/admin/profile { username, email } -> { success, admin }
+app.put("/api/admin/profile", authenticateAdmin, async (req, res) => {
+  try {
+    const { id } = req.admin;
+    const { username, email } = req.body || {};
+    if (!username || !email) {
+      return res.status(400).json({ error: "username and email are required" });
+    }
+
+    // uniqueness checks
+    const dupUser = await pool.query(
+      "SELECT id FROM admins WHERE username = $1 AND id != $2",
+      [username, id]
+    );
+    if (dupUser.rows.length) return res.status(400).json({ error: "Username already taken" });
+
+    const dupEmail = await pool.query(
+      "SELECT id FROM admins WHERE email = $1 AND id != $2",
+      [email, id]
+    );
+    if (dupEmail.rows.length) return res.status(400).json({ error: "Email already in use" });
+
+    const updated = await pool.query(
+      `UPDATE admins
+       SET username = $1, email = $2
+       WHERE id = $3
+       RETURNING id, username, email, created_at, last_login`,
+      [username, email, id]
+    );
+
+    res.json({ success: true, admin: updated.rows[0] });
+  } catch (e) {
+    console.error("PUT /api/admin/profile", e);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+// PUT /api/admin/password { current_password, new_password } -> { success }
+app.put("/api/admin/password", authenticateAdmin, async (req, res) => {
+  try {
+    const { id } = req.admin;
+    const { current_password, new_password } = req.body || {};
+    if (!current_password || !new_password) {
+      return res.status(400).json({ error: "current_password and new_password are required" });
+    }
+
+    const row = await pool.query("SELECT password FROM admins WHERE id = $1", [id]);
+    if (!row.rows.length) return res.status(404).json({ error: "Admin not found" });
+
+    const ok = await bcrypt.compare(current_password, row.rows[0].password);
+    if (!ok) return res.status(400).json({ error: "Current password is incorrect" });
+
+    const hash = await bcrypt.hash(new_password, 12);
+    await pool.query("UPDATE admins SET password = $1 WHERE id = $2", [hash, id]);
+
+    res.json({ success: true });
+  } catch (e) {
+    console.error("PUT /api/admin/password", e);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   logger.error(`Unhandled error: ${err.message}`, { stack: err.stack })

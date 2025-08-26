@@ -2,6 +2,7 @@
 
 import { Routes, Route, Navigate, useLocation } from "react-router-dom"
 import { useEffect, useRef } from "react"
+import { useAuth } from "../contexts/AuthContext"
 
 // components
 import AdminNavbar from "../components/Navbars/AdminNavbar.js"
@@ -11,7 +12,6 @@ import FooterAdmin from "../components/Footers/FooterAdmin.js"
 
 // views
 import Dashboard from "../views/user/Dashboard.js"
-import Maps from "../views/user/Maps.js"
 import Settings from "../views/user/Settings.js"
 import ShortenUrl from "../views/user/ShortenUrl.js"
 import ManageLinks from "../views/user/ManageLinks.js"
@@ -27,6 +27,7 @@ import Payments from "../views/user/Payments.js"
 export default function Admin() {
   const location = useLocation()
   const contentRef = useRef(null)
+  const { user, loading } = useAuth()
 
   useEffect(() => {
     // Scroll to the content area after route change
@@ -34,6 +35,23 @@ export default function Admin() {
       contentRef.current?.scrollIntoView({ behavior: "smooth" })
     }, 50) // Small delay for smooth UX
   }, [location.pathname])
+
+  // Show loading while checking authentication
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // If not authenticated, don't render the admin layout
+  if (!user) {
+    return null
+  }
 
   return (
     <>
@@ -44,7 +62,6 @@ export default function Admin() {
         <div ref={contentRef} className="px-4 md:px-10 mx-auto w-full -m-24">
           <Routes>
             <Route path="dashboard" element={<Dashboard />} />
-            <Route path="maps" element={<Maps />} />
             <Route path="ShortenUrl" element={<ShortenUrl />} />
             <Route path="manageLinks" element={<ManageLinks />} />
             <Route path="myLinks" element={<MyLinks />} />

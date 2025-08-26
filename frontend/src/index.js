@@ -138,5 +138,5 @@ ReactDOM.render(
       </Routes>
     </BrowserRouter>
   </AuthProvider>,
-  document.getElementById("root"),
+  document.getElementById("root")
 )

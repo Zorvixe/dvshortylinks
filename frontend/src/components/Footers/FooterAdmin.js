@@ -12,11 +12,11 @@ export default function FooterAdmin() {
               <div className="text-sm text-blueGray-500 w-fit font-semibold py-1 text-center md:text-left">
                 Copyright © {new Date().getFullYear()}{" "}
                 <a
-                href="https://www.Dvshortenlinks.com/"
+                href="https://dvshortylinks.com/"
                 className="text-blueGray-500 hover:text-blueGray-700 text-sm font-semibold py-1"
                 target="_blank"
                 >
-                  DVShortenLinks
+                  DVShortyLinks
                 </a>
                 {" | "}Distributed by{" "}
                 <a
@@ -32,11 +32,11 @@ export default function FooterAdmin() {
               <ul className="flex flex-wrap list-none md:justify-end  justify-center">
                 <li>
                   <a
-                href="https://www.Dvshortenlinks.com/"
+                href="https://dvshortylinks.com/"
                     target="_blank"
                     className="text-blueGray-600 hover:text-blueGray-800 text-sm font-semibold block py-1 px-3"
                   >
-                    Dvshortenlinks
+                    Dvshortylinks
                   </a>
                 </li>
                 <li>

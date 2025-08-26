@@ -155,11 +155,11 @@ export default function Footer() {
               <div className="text-sm text-blueGray-500 font-semibold py-1">
                 Copyright © {new Date().getFullYear()}{" "}
                 <a
-                href="https://www.Dvshortenlinks.com/"
+                href="https://dvshortylinks.com/"
                   target="_blank"
                   className="text-blueGray-500 hover:text-blueGray-800"
                 >
-                  DVShortenLinks
+                  DVShortyLinks
                 </a>
                 .
               </div>

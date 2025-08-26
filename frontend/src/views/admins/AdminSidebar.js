@@ -1,5 +1,6 @@
 "use client"
 import { useState, useEffect, createContext, useContext } from "react"
+import { useNavigate } from "react-router-dom" // <-- For SPA navigation
 import "./AdminSidebar.css"
 import Logo from "../../assets/img/dv_logo.png"
 
@@ -17,6 +18,8 @@ const Sidebar = ({ currentPage, onNavigate }) => {
   const [quickStats, setQuickStats] = useState({ totalUsers: 0, pendingWithdrawals: 0 })
   const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:5000"
 
+  const navigate = useNavigate() // <-- useNavigate hook
+
   const navigationItems = [
     { id: "dashboard", label: "Dashboard", icon: "📊", path: "/admindashboard", description: "Overview & Analytics" },
     { id: "users", label: "Users", icon: "👥", path: "/adminusers", description: "User Management" },
@@ -29,17 +32,17 @@ const Sidebar = ({ currentPage, onNavigate }) => {
   const handleLogout = () => {
     localStorage.removeItem("adminToken")
     localStorage.removeItem("adminData")
-    window.location.href = "/adminlogin"
+    navigate("/adminlogin") // <-- SPA navigation
   }
+
   const handleSetting = () => {
-    window.location.href = "/adminset"
+    navigate("/adminset") // <-- SPA navigation for settings
   }
 
   const handleNavigation = (item) => {
     if (onNavigate) onNavigate(item.id)
-    else window.location.href = item.path
-    // Close mobile drawer after navigation
-    setIsMobileOpen(false)
+    else navigate(item.path) // <-- SPA navigation
+    setIsMobileOpen(false) // Close mobile drawer
   }
 
   // Persisted admin + quick stats
@@ -68,19 +71,13 @@ const Sidebar = ({ currentPage, onNavigate }) => {
 
   // Lock body scroll when mobile drawer is open
   useEffect(() => {
-    if (isMobileOpen) {
-      document.documentElement.style.overflow = "hidden"
-    } else {
-      document.documentElement.style.overflow = ""
-    }
+    document.documentElement.style.overflow = isMobileOpen ? "hidden" : ""
     return () => (document.documentElement.style.overflow = "")
   }, [isMobileOpen])
 
   // Close on escape
   useEffect(() => {
-    const onKeyDown = (e) => {
-      if (e.key === "Escape") setIsMobileOpen(false)
-    }
+    const onKeyDown = (e) => { if (e.key === "Escape") setIsMobileOpen(false) }
     window.addEventListener("keydown", onKeyDown)
     return () => window.removeEventListener("keydown", onKeyDown)
   }, [])
@@ -104,19 +101,16 @@ const Sidebar = ({ currentPage, onNavigate }) => {
       />
 
       <div
-        className={`admin-sidebar-amdm ${isCollapsed ? "collapsed-amdm" : ""} ${
-          isMobileOpen ? "mobile-open-amdm" : ""
-        }`}
+        className={`admin-sidebar-amdm ${isCollapsed ? "collapsed-amdm" : ""} ${isMobileOpen ? "mobile-open-amdm" : ""}`}
         role="navigation"
         aria-label="Admin sidebar"
       >
         {/* Header */}
         <div className="sidebar-header-amdm">
           <div className="logo-container-amdm">
-            <div className=""><img src={Logo} alt="DVSHORTYLINKS Logo" className="dv_logo_admin" /></div>
+            <img src={Logo} alt="DVSHORTYLINKS Logo" className="dv_logo_admin" />
             {!isCollapsed && (
               <div className="logo-text-amdm">
-               
                 <h4 className="logo-title-amdm" title="DVSHORTYLINKS">DVSHORTYLINKS</h4>
                 <p className="logo-subtitle-amdm">Management Console</p>
               </div>
@@ -205,7 +199,7 @@ const Sidebar = ({ currentPage, onNavigate }) => {
               {!isCollapsed && <span>Settings</span>}
             </button>
             <button className="action-btn-amdm logout-amdm" title="Logout" onClick={handleLogout}>
-              <span className="action-icon-amdm" aria-hidden="true">🚪</span>
+              <span className="action-icon-amdm" aria-hidden="true">⏻</span>
               {!isCollapsed && <span>Logout</span>}
             </button>
           </div>

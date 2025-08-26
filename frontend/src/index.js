@@ -11,7 +11,6 @@ import "./preloader"
 import Admin from "./layouts/Admin"
 import Auth from "./layouts/Auth"
 import ShortUrlRedirect from "views/user/ShortUrlRedirect"
-import AdminSet from "./views/admin/AdminSet";
 
 import Profile from "./views/Profile"
 import Index from "./views/Index"
@@ -28,6 +27,7 @@ import AdminWithdrawals from "views/admins/AdminWithdrawals"
 import AdminAnnouncements from "views/admins/AdminAnnouncements"
 import AdminRevenueDashboard from "views/admins/AdminRevenueDashboard"
 import CpmAdmin from "views/admins/CpmAdmin"
+import AdminSet from "views/admins/AdminSet";
 
 // context
 import { AuthProvider } from "./contexts/AuthContext"

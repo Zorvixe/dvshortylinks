@@ -1,6 +1,7 @@
 // src/views/admin/AdminSet.js
 "use client";
 import { useEffect, useState } from "react";
+import "./AdminSet.css"
 
 export default function AdminSet() {
   const API = process.env.REACT_APP_API_URL || "http://localhost:5000";

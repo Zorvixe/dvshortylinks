@@ -1,151 +1,187 @@
-"use client"
+"use client";
 
-import { createContext, useContext, useState, useEffect } from "react"
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
-const AuthContext = createContext()
+const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState("")
-  const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:5000"
+  const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:5000";
 
-  useEffect(() => {
-    const initializeAuth = async () => {
-      const token = localStorage.getItem("token")
-      if (!token) {
-        setLoading(false)
-        return
-      }
+  // Keep token in state so it updates reactively across the app
+  const [token, setToken] = useState(() => localStorage.getItem("token") || null);
+  const [user, setUser]   = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-      try {
-        const response = await fetch(`${apiUrl}/api/dashboard`, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-
-        if (response.ok) {
-          const data = await response.json()
-          setUser(data.user)
-        } else {
-          localStorage.removeItem("token")
-        }
-      } catch (err) {
-        console.error("Auth initialization failed:", err)
-        localStorage.removeItem("token")
-      } finally {
-        setLoading(false)
-      }
+  // Helper: persist token both in state & localStorage
+  const persistToken = (newToken) => {
+    if (newToken) {
+      localStorage.setItem("token", newToken);
+      setToken(newToken);
+    } else {
+      localStorage.removeItem("token");
+      setToken(null);
     }
+  };
 
-    initializeAuth()
-  }, [apiUrl])
+  // Fetch current user using /api/me
+  const fetchMe = async (currentToken) => {
+    try {
+      const res = await fetch(`${apiUrl}/api/me`, {
+        headers: { Authorization: `Bearer ${currentToken}` },
+      });
+
+      if (res.status === 401 || res.status === 403) {
+        // Only clear token on explicit auth failures
+        persistToken(null);
+        setUser(null);
+        return { ok: false };
+      }
+
+      if (!res.ok) {
+        // Transient error (network/CORS/server). Keep token; show error state.
+        const text = await res.text().catch(() => "");
+        throw new Error(text || "Failed to restore session");
+      }
+
+      const data = await res.json();
+      setUser(data.user || null);
+      return { ok: true };
+    } catch (e) {
+      console.error("fetchMe error:", e);
+      setError(e.message || "Failed to restore session");
+      // DO NOT remove token here; let user refresh or we retry on next mount
+      return { ok: false, error: e.message };
+    }
+  };
+
+  // Initialize on mount / when apiUrl or token changes
+  useEffect(() => {
+    let cancelled = false;
+
+    (async () => {
+      setLoading(true);
+      setError("");
+      const currentToken = token || localStorage.getItem("token");
+
+      if (!currentToken) {
+        setUser(null);
+        setLoading(false);
+        return;
+      }
+
+      const result = await fetchMe(currentToken);
+      if (!cancelled) setLoading(false);
+      if (!result.ok && !cancelled) {
+        // keep user as-is or null; token is preserved unless 401/403
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [apiUrl, token]);
+
+  // ------- Auth actions -------
 
   const login = async (identifier, password) => {
     try {
-      setLoading(true)
-      setError("")
-
-      const response = await fetch(`${apiUrl}/api/login`, {
+      setLoading(true);
+      setError("");
+      const res = await fetch(`${apiUrl}/api/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username: identifier, password }),
-      })
+      });
 
-      const data = await response.json()
+      const data = await res.json().catch(() => ({}));
 
-      if (!response.ok) {
-        throw new Error(data.error || "Login failed")
+      if (!res.ok) {
+        throw new Error(data.error || "Login failed");
       }
 
-      localStorage.setItem("token", data.token)
-      setUser(data.user)
-      return { success: true }
-    } catch (err) {
-      setError(err.message)
-      return { success: false, error: err.message }
+      persistToken(data.token);
+      setUser(data.user || null);
+      return { success: true };
+    } catch (e) {
+      setError(e.message);
+      return { success: false, error: e.message };
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const register = async (username, email, password, referralCode) => {
     try {
-      setLoading(true)
-      setError("")
-
-      const response = await fetch(`${apiUrl}/api/register`, {
+      setLoading(true);
+      setError("");
+      const res = await fetch(`${apiUrl}/api/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, email, password, referralCode }),
-      })
+      });
 
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.error || "Registration failed")
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data.error || "Registration failed");
       }
 
-      localStorage.setItem("token", data.token)
-      setUser(data.user)
-      return { success: true }
-    } catch (err) {
-      setError(err.message)
-      return { success: false, error: err.message }
+      persistToken(data.token);
+      setUser(data.user || null);
+      return { success: true };
+    } catch (e) {
+      setError(e.message);
+      return { success: false, error: e.message };
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
-  const socialLogin = async (token) => {
+  // Called by /auth-callback after social login
+  const socialLogin = async (incomingToken) => {
     try {
-      localStorage.setItem("token", token)
-      setLoading(true)
-
-      const response = await fetch(`${apiUrl}/api/dashboard`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-
-      if (!response.ok) {
-        throw new Error("Social login failed")
-      }
-
-      const data = await response.json()
-      setUser(data.user)
-      return { success: true }
-    } catch (err) {
-      setError(err.message)
-      localStorage.removeItem("token")
-      return { success: false, error: err.message }
+      setLoading(true);
+      setError("");
+      persistToken(incomingToken);
+      const result = await fetchMe(incomingToken);
+      if (!result.ok) throw new Error("Social login failed");
+      return { success: true };
+    } catch (e) {
+      persistToken(null);
+      setUser(null);
+      setError(e.message);
+      return { success: false, error: e.message };
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const logout = () => {
-    localStorage.removeItem("token")
-    setUser(null)
-  }
+    persistToken(null);
+    setUser(null);
+  };
 
-  const value = {
-    user,
-    loading,
-    error,
-    login,
-    register,
-    socialLogin,
-    logout,
-    isAuthenticated: !!user,
-    token: localStorage.getItem("token"),
-    API_BASE_URL: apiUrl,
-  }
+  const value = useMemo(
+    () => ({
+      user,
+      token,
+      loading,
+      error,
+      API_BASE_URL: apiUrl,
+      isAuthenticated: !!user && !!token,
+      login,
+      register,
+      socialLogin,
+      logout,
+    }),
+    [user, token, loading, error, apiUrl]
+  );
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {
-  const context = useContext(AuthContext)
-  if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider")
-  }
-  return context
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error("useAuth must be used within an AuthProvider");
+  return ctx;
 }

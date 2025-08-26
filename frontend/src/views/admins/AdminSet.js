@@ -56,13 +56,12 @@ export default function AdminSet() {
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || "Failed to update profile");
 
-      // Keep small admin header info for sidebar
       localStorage.setItem("adminData", JSON.stringify({
         username: data.admin.username,
         email: data.admin.email,
       }));
 
-      setMsg("Profile updated.");
+      setMsg("Profile updated successfully");
     } catch (e1) {
       setError(e1.message);
     } finally {
@@ -90,7 +89,7 @@ export default function AdminSet() {
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || "Failed to change password");
       setPw({ current_password: "", new_password: "", confirm_password: "" });
-      setMsg("Password changed.");
+      setMsg("Password changed successfully");
     } catch (e2) {
       setError(e2.message);
     } finally {
@@ -100,103 +99,153 @@ export default function AdminSet() {
 
   if (loading) {
     return (
-      <div className="container py-4">
-        <div className="placeholder-wave">
-          <span className="placeholder col-6"></span>
+      <div className="adms-container">
+        <div className="adms-header">
+          <h1>Admin Settings</h1>
+        </div>
+        <div className="adms-loading">
+          <div className="adms-loading-line"></div>
+          <div className="adms-loading-line adms-shorter"></div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="container py-4">
-      <h1 className="h4 mb-3">Admin Settings</h1>
+    <div className="adms-container">
+      <div className="adms-header">
+        <h1>Admin Settings</h1>
+        <p>Manage your account settings</p>
+      </div>
 
-      {error && <div className="alert alert-danger">{error}</div>}
-      {msg && <div className="alert alert-success">{msg}</div>}
+      {error && (
+        <div className="adms-alert adms-error">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+            <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z"/>
+          </svg>
+          <span>{error}</span>
+        </div>
+      )}
+      
+      {msg && (
+        <div className="adms-alert adms-success">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+          </svg>
+          <span>{msg}</span>
+        </div>
+      )}
 
-      {/* Profile (username & email only) */}
-      <form onSubmit={saveProfile} className="card mb-4">
-        <div className="card-header fw-semibold">Profile</div>
-        <div className="card-body">
-          <div className="row g-3">
-            <div className="col-md-6">
-              <label className="form-label">Username</label>
-              <input
-                type="text"
-                className="form-control"
-                name="username"
-                value={form.username}
-                onChange={onChange}
-                required
-              />
-            </div>
-            <div className="col-md-6">
-              <label className="form-label">Email</label>
-              <input
-                type="email"
-                className="form-control"
-                name="email"
-                value={form.email}
-                onChange={onChange}
-                required
-              />
-            </div>
+      <div className="adms-content">
+        <div className="adms-card">
+          <div className="adms-card-header">
+            <h2>Profile Information</h2>
+            <p>Update your account details</p>
           </div>
+          
+          <form onSubmit={saveProfile} className="adms-card-body">
+            <div className="adms-form-group">
+              <div className="adms-input-group">
+                <label className="adms-label">Username</label>
+                <input
+                  type="text"
+                  className="adms-input"
+                  name="username"
+                  value={form.username}
+                  onChange={onChange}
+                  required
+                />
+              </div>
+              
+              <div className="adms-input-group">
+                <label className="adms-label">Email Address</label>
+                <input
+                  type="email"
+                  className="adms-input"
+                  name="email"
+                  value={form.email}
+                  onChange={onChange}
+                  required
+                />
+              </div>
+            </div>
+            
+            <div className="adms-card-footer">
+              <button className="adms-btn adms-btn-primary" disabled={saving}>
+                {saving ? (
+                  <>
+                    <svg className="adms-spinner" width="14" height="14" viewBox="0 0 24 24">
+                      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                    </svg>
+                    Saving...
+                  </>
+                ) : "Save Changes"}
+              </button>
+            </div>
+          </form>
         </div>
-        <div className="card-footer text-end">
-          <button className="btn btn-primary" disabled={saving}>
-            {saving ? "Saving..." : "Save changes"}
-          </button>
-        </div>
-      </form>
 
-      {/* Change password */}
-      <form onSubmit={changePassword} className="card">
-        <div className="card-header fw-semibold">Change Password</div>
-        <div className="card-body">
-          <div className="row g-3">
-            <div className="col-md-4">
-              <label className="form-label">Current password</label>
-              <input
-                type="password"
-                className="form-control"
-                name="current_password"
-                value={pw.current_password}
-                onChange={onChangePw}
-                required
-              />
-            </div>
-            <div className="col-md-4">
-              <label className="form-label">New password</label>
-              <input
-                type="password"
-                className="form-control"
-                name="new_password"
-                value={pw.new_password}
-                onChange={onChangePw}
-                required
-              />
-            </div>
-            <div className="col-md-4">
-              <label className="form-label">Confirm new password</label>
-              <input
-                type="password"
-                className="form-control"
-                name="confirm_password"
-                value={pw.confirm_password}
-                onChange={onChangePw}
-                required
-              />
-            </div>
+        <div className="adms-card">
+          <div className="adms-card-header">
+            <h2>Update Password</h2>
+            <p>Change your account password</p>
           </div>
+          
+          <form onSubmit={changePassword} className="adms-card-body">
+            <div className="adms-form-group">
+              <div className="adms-input-group">
+                <label className="adms-label">Current Password</label>
+                <input
+                  type="password"
+                  className="adms-input"
+                  name="current_password"
+                  value={pw.current_password}
+                  onChange={onChangePw}
+                  required
+                />
+              </div>
+              
+              <div className="adms-input-group">
+                <label className="adms-label">New Password</label>
+                <input
+                  type="password"
+                  className="adms-input"
+                  name="new_password"
+                  value={pw.new_password}
+                  onChange={onChangePw}
+                  required
+                />
+              </div>
+              
+              <div className="adms-input-group">
+                <label className="adms-label">Confirm New Password</label>
+                <input
+                  type="password"
+                  className="adms-input"
+                  name="confirm_password"
+                  value={pw.confirm_password}
+                  onChange={onChangePw}
+                  required
+                />
+              </div>
+            </div>
+            
+            <div className="adms-card-footer">
+              <button className="adms-btn adms-btn-primary" disabled={pwSaving}>
+                {pwSaving ? (
+                  <>
+                    <svg className="adms-spinner" width="14" height="14" viewBox="0 0 24 24">
+                      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                    </svg>
+                    Updating...
+                  </>
+                ) : "Update Password"}
+              </button>
+            </div>
+          </form>
         </div>
-        <div className="card-footer text-end">
-          <button className="btn btn-primary" disabled={pwSaving}>
-            {pwSaving ? "Updating..." : "Change password"}
-          </button>
-        </div>
-      </form>
+      </div>
     </div>
   );
 }

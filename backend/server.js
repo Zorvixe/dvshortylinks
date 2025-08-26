@@ -2939,6 +2939,23 @@ app.post("/api/contact", async (req, res) => {
   }
 })
 
+// GET /api/admin/me -> { admin }
+app.get("/api/admin/me", authenticateAdmin, async (req, res) => {
+  try {
+    const { id } = req.admin;
+    const result = await pool.query(
+      `SELECT id, username, email, created_at, last_login
+       FROM admins WHERE id = $1`,
+      [id]
+    );
+    if (!result.rows.length) return res.status(404).json({ error: "Admin not found" });
+    res.json({ admin: result.rows[0] });
+  } catch (e) {
+    console.error("GET /api/admin/me", e);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 // PUT /api/admin/profile { username, email } -> { success, admin }
 app.put("/api/admin/profile", authenticateAdmin, async (req, res) => {
   try {

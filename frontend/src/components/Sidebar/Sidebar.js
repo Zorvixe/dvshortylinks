@@ -3,20 +3,21 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../../assets/img/dv_logo.png";
 
+
 import NotificationDropdown from "components/Dropdowns/NotificationDropdown.js";
 import UserDropdown from "components/Dropdowns/UserDropdown.js";
 
 export default function Sidebar() {
   const [isToolsOpen, setIsToolsOpen] = useState(false);
-  const [collapseShow, setCollapseShow] = useState("hidden");
-  const navigate = useNavigate();
 
-  const handleLogout = () => {
+  const [collapseShow, setCollapseShow] = React.useState("hidden");
+    const navigate = useNavigate();
+  const handleLogout = (e) => {
+    e.preventDefault();
     localStorage.removeItem("adminToken");
     localStorage.removeItem("adminData");
-    navigate("/adminlogin");
+    navigate("/auth/login"); // redirect to login page
   };
-
   return (
     <>
       <nav className="md:left-0 md:block md:fixed md:top-0 md:bottom-0 md:overflow-y-auto md:flex-row md:flex-nowrap md:overflow-hidden shadow-xl bg-white flex flex-wrap items-center justify-between relative md:w-64 z-10 py-4 px-6">
@@ -29,21 +30,22 @@ export default function Sidebar() {
           >
             <i className="fas fa-bars"></i>
           </button>
-
           {/* Brand */}
           <Link
             className="md:block text-left md:pb-2 text-blueGray-600 mr-0 inline-block whitespace-nowrap text-sm uppercase font-bold p-4 px-0"
             to="/admin/dashboard"
           >
-            <img src={logo} className="dv_logo_admin" alt="DVShortyLinks Logo" />
-            <h1
-              className="hidden md:block text-left md:pb-2 text-blueGray-600 mr-0 whitespace-nowrap text-sm uppercase font-bold p-4 px-0"
-            >
-              DVSHORTYLINKS
-            </h1>
-          </Link>
+            <img src={logo} className="dv_logo_admin" /> <h1
+            to="/admin/dashboard"
+            className="hidden md:block text-left md:pb-2 text-blueGray-600 mr-0 whitespace-nowrap text-sm uppercase font-bold p-4 px-0"
+          >
+            DVSHORTYLINKS
+          </h1>
 
-          {/* User dropdowns */}
+          </Link>
+         
+
+          {/* User */}
           <ul className="md:hidden items-center flex flex-wrap list-none">
             <li className="inline-block relative">
               <NotificationDropdown />
@@ -52,7 +54,6 @@ export default function Sidebar() {
               <UserDropdown />
             </li>
           </ul>
-
           {/* Collapse */}
           <div
             className={
@@ -82,29 +83,26 @@ export default function Sidebar() {
                 </div>
               </div>
             </div>
-
-            {/* Search Form */}
+            {/* Form */}
             <form className="mt-6 mb-4 md:hidden">
               <div className="mb-3 pt-0">
                 <input
                   type="text"
                   placeholder="Search"
-                  className="border-0 px-3 py-2 h-12 border border-solid border-blueGray-500 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-base leading-snug shadow-none outline-none focus:outline-none w-full font-normal"
+                  className="border-0 px-3 py-2 h-12 border border-solid  border-blueGray-500 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-base leading-snug shadow-none outline-none focus:outline-none w-full font-normal"
                 />
               </div>
             </form>
 
             {/* Divider */}
             <hr className="my-4 md:min-w-full" />
-
             {/* Heading */}
             <h6 className="md:min-w-full text-blueGray-500 text-xs uppercase font-bold block pt-1 pb-4 no-underline">
               Admin Layout Pages
             </h6>
-
             {/* Navigation */}
+
             <ul className="md:flex-col md:min-w-full flex flex-col list-none">
-              {/* Dashboard */}
               <li className="items-center">
                 <Link
                   className={
@@ -127,7 +125,9 @@ export default function Sidebar() {
                 </Link>
               </li>
 
-              {/* Tools Menu */}
+
+
+
               <li className="items-center">
                 <button
                   onClick={() => setIsToolsOpen(!isToolsOpen)}
@@ -152,7 +152,7 @@ export default function Sidebar() {
                   ></i>
                 </button>
 
-                {/* Sub-menu */}
+                {/* Sub-menu items */}
                 {isToolsOpen && (
                   <ul className="ml-3">
                     <li className="py-1">
@@ -165,15 +165,114 @@ export default function Sidebar() {
                             : "text-blueGray-500 hover:text-blueGray-700")
                         }
                       >
-                        <i className="fas fa-link mr-2 text-xs"></i> Shorten URL
+                        <i className="fas fa-link mr-2 text-xs"></i>  Shorten URL
                       </Link>
                     </li>
-                    {/* Add other sub-links here */}
+                    <li className="py-1">
+                      <Link
+                        to="/admin/manageLinks"
+                        className={
+                          "text-sm block " +
+                          (window.location.href.includes("/admin/manageLinks")
+                            ? "text-lightBlue-500"
+                            : "text-blueGray-500 hover:text-blueGray-700")
+                        }
+                      >
+                        <i className="fas fa-link mr-2 text-xs"></i>  Manage Links
+                      </Link>
+                    </li>
+                    <li className="py-1">
+                      <Link
+                        to="/admin/myLinks"
+                        className={
+                          "text-sm block " +
+                          (window.location.href.includes("/admin/myLinks")
+                            ? "text-lightBlue-500"
+                            : "text-blueGray-500 hover:text-blueGray-700")
+                        }
+                      >
+                        <i className="fas fa-user mr-2 text-xs"></i>  My Links
+                      </Link>
+                    </li>
+                    <li className="py-1">
+                      <Link
+                        to="/admin/allLinks"
+                        className={
+                          "text-sm block " +
+                          (window.location.href.includes("/admin/allLinks")
+                            ? "text-lightBlue-500"
+                            : "text-blueGray-500 hover:text-blueGray-700")
+                        }
+                      >
+                        <i className="fas fa-list mr-2 text-xs"></i>  All Links
+                      </Link>
+                    </li>
+                    <li className="py-1">
+                      <Link
+                        to="/admin/api"
+                        className={
+                          "text-sm block " +
+                          (window.location.href.includes("/admin/api")
+                            ? "text-lightBlue-500"
+                            : "text-blueGray-500 hover:text-blueGray-700")
+                        }
+                      >
+                        <i className="fas fa-code mr-2 text-xs"></i>   Api
+                      </Link>
+                    </li>
+                    <li className="py-1">
+                      <Link
+                        to="/admin/hiddenlinks"
+                        className={
+                          "text-sm block " +
+                          (window.location.href.includes("/admin/hiddenlinks")
+                            ? "text-lightBlue-500"
+                            : "text-blueGray-500 hover:text-blueGray-700")
+                        }
+                      >
+                        <i className="fas fa-eye-slash mr-2 text-xs"></i>   Hidden Links
+                      </Link>
+                    </li> <li className="py-1">
+                      <Link
+                        to="/admin/massshrinker"
+                        className={
+                          "text-sm block " +
+                          (window.location.href.includes("/admin/massshrinker")
+                            ? "text-lightBlue-500"
+                            : "text-blueGray-500 hover:text-blueGray-700")
+                        }
+                      >
+                        <i className="fas fa-compress-alt mr-2 text-xs"></i>   Mass Shrinker
+                      </Link>
+                    </li>  <li className="py-1">
+                      <Link
+                        to="/admin/referrals"
+                        className={
+                          "text-sm block " +
+                          (window.location.href.includes("/admin/referrals")
+                            ? "text-lightBlue-500"
+                            : "text-blueGray-500 hover:text-blueGray-700")
+                        }
+                      >
+                        <i className="fas fa-user-friends mr-2 text-xs"></i>   Referrals
+                      </Link>
+                    </li> <li className="py-1">
+                      <Link
+                        to="/admin/Statistics"
+                        className={
+                          "text-sm block " +
+                          (window.location.href.includes("/admin/Statistics")
+                            ? "text-lightBlue-500"
+                            : "text-blueGray-500 hover:text-blueGray-700")
+                        }
+                      >
+                        <i className="fas fa-chart-bar mr-2 text-xs"></i>   Statistics
+                      </Link>
+                    </li>
                   </ul>
                 )}
               </li>
 
-              {/* Payments */}
               <li className="items-center">
                 <Link
                   className={
@@ -197,10 +296,11 @@ export default function Sidebar() {
               </li>
             </ul>
 
+
+
             {/* Divider */}
             <hr className="my-4 md:min-w-full" />
 
-            {/* Settings & Profile */}
             <ul className="md:flex-col md:min-w-full flex flex-col list-none md:mb-4">
               <li className="items-center">
                 <Link
@@ -214,7 +314,7 @@ export default function Sidebar() {
                 >
                   <i
                     className={
-                      "fas fa-cog mr-2 text-sm " +
+                      "fas fa-tools mr-2 text-sm " +
                       (window.location.href.indexOf("/admin/settings") !== -1
                         ? "opacity-75"
                         : "text-blueGray-300")
@@ -233,7 +333,6 @@ export default function Sidebar() {
                 </Link>
               </li>
             </ul>
-
             {/* Logout at the bottom */}
             <div className="mt-auto mb-4">
               <button

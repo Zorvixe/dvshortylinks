@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Charset + viewport -->
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="google-adsense-account" content="ca-pub-4814003097452326">
+
+  <style>
+    /* Preloader overlay */
+    #preloader {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      background: #fff;
+      z-index: 9999;
+      transition: opacity .25s ease;
+    }
+
+    #preloader.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* Spinner around the image */
+    .spinner {
+      position: relative;
+      width: 84px;
+      height: 84px;
+      display: grid;
+      place-items: center;
+    }
+
+    .spinner::before,
+    .spinner::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 3px solid transparent;
+      border-top-color: #111827;
+      /* dark outer arc */
+      border-right-color: #111827;
+      animation: spin 0.9s linear infinite;
+    }
+
+    .spinner::after {
+      inset: 8px;
+      /* inner ring */
+      border-top-color: #8b5cf6;
+      /* violet inner arc */
+      border-right-color: #8b5cf6;
+      animation-duration: 1.3s;
+    }
+
+    .preloader_image {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      object-fit: contain;
+      animation: pulse 1.6s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.06);
+      }
+    }
+
+    /* Scroll-to-top */
+    .scroll-top {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      background: #111;
+      color: #fff;
+      border-radius: 8px;
+      padding: 10px 12px;
+      text-decoration: none;
+      display: none;
+      z-index: 50;
+    }
+
+    .scroll-top.show {
+      display: block;
+    }
+
+    /* Respect reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+
+      .spinner::before,
+      .spinner::after,
+      .preloader_image {
+        animation: none !important;
+      }
+    }
+  </style>
+
+  <!-- Title & Description -->
+  <title>DVShortyLinks - Smart URL Shortener & Link Monetization (High CPM)</title>
+  <meta name="description"
+    content="DVShortyLinks is a fast URL shortener with built-in monetization. Create short links, track clicks, and earn with high CPM rates. Simple, secure, and scalable." />
+  <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+
+  <!-- Canonical + hreflang -->
+  <link rel="canonical" href="https://www.dvshortylinks.com/" />
+  <link rel="alternate" href="https://www.dvshortylinks.com/" hreflang="x-default" />
+  <link rel="alternate" href="https://www.dvshortylinks.com/" hreflang="en" />
+  <link rel="alternate" href="https://www.dvshortylinks.com/in/" hreflang="en-IN" />
+
+  <!-- App/Brand -->
+  <meta name="application-name" content="DVShortyLinks" />
+  <meta name="apple-mobile-web-app-title" content="DVShortyLinks" />
+  <meta name="theme-color" content="#111827" />
+  <meta name="color-scheme" content="light dark" />
+
+  <!-- PWA / Icons -->
+  <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+  <link rel="apple-touch-icon" sizes="180x180" href="%PUBLIC_URL%/apple-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="%PUBLIC_URL%/icons/icon-32.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="%PUBLIC_URL%/icons/icon-192.png" />
+  <link rel="shortcut icon" href="%PUBLIC_URL%/images/dv_favicon.png" />
+
+  <!-- Open Graph -->
+  <meta property="og:site_name" content="DVShortyLinks" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="DVShortyLinks — Smart URL Shortener & Link Monetization" />
+  <meta property="og:description"
+    content="Shorten URLs, track clicks, and earn via high CPM monetization. Powerful analytics and admin tools." />
+  <meta property="og:url" content="https://www.dvshortylinks.com/" />
+  <meta property="og:image" content="%PUBLIC_URL%/og-image.jpg" />
+  <meta property="og:image:alt" content="DVShortyLinks — shorten, track and monetize your links" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:locale" content="en_IN" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="DVShortyLinks — Smart URL Shortener & Monetization" />
+  <meta name="twitter:description"
+    content="Create short links, analyze clicks, and earn with high CPM. Simple, secure, scalable." />
+  <meta name="twitter:image" content="%PUBLIC_URL%/og-image.jpg" />
+
+  <!-- Performance hints -->
+  <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin />
+  <link rel="preconnect" href="https://www.google-analytics.com" crossorigin />
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
+  <link rel="dns-prefetch" href="//cdnjs.cloudflare.com" />
+
+  <!-- Font Awesome 6 (fixed SRI) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <!-- ========= Structured Data ========= -->
+  <!-- Organization -->
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"Organization",
+    "name":"DVShortyLinks",
+    "url":"https://www.dvshortylinks.com/",
+    "logo":"https://www.dvshortylinks.com/og-image.jpg",
+    "sameAs":[
+      "https://twitter.com/YOUR_HANDLE",
+      "https://www.facebook.com/YOUR_PAGE"
+    ]
+  }
+  </script>
+
+  <!-- WebSite + Sitelinks Search -->
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"WebSite",
+    "name":"DVShortyLinks",
+    "url":"https://www.dvshortylinks.com/",
+    "potentialAction":{
+      "@type":"SearchAction",
+      "target":"https://www.dvshortylinks.com/search?q={query}",
+      "query-input":"required name=query"
+    }
+  }
+  </script>
+
+  <!-- WebApplication -->
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"WebApplication",
+    "name":"DVShortyLinks",
+    "applicationCategory":"BusinessApplication",
+    "operatingSystem":"Web",
+    "url":"https://www.dvshortylinks.com/",
+    "description":"Smart URL shortener with built-in monetization and analytics.",
+    "inLanguage":"en"
+  }
+  </script>
+
+  <!-- ========= Google Tag Manager ========= -->
+  <script>
+    (function (w, d, s, l, i) {
+      w[l] = w[l] || []; w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+      var f = d.getElementsByTagName(s)[0], j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : '';
+      j.async = true; j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
+    })(window, document, 'script', 'dataLayer', 'GTM-5J9B65BX');
+  </script>
+
+  <!-- ========= Google Analytics (GA4) ========= -->
+  <!-- If you keep GA here, do NOT also add GA in GTM to avoid duplicates -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-CYQ678Z5QR"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-CYQ678Z5QR');
+  </script>
+
+  <!-- ========= Microsoft Clarity ========= -->
+  <script type="text/javascript">
+    (function (c, l, a, r, i, t, y) {
+      c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments) };
+      t = l.createElement(r); t.async = 1; t.src = "https://www.clarity.ms/tag/" + i;
+      y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
+    })(window, document, "clarity", "script", "sz7keu0xmg");
+  </script>
+</head>
+
+<body class="text-blueGray-700 antialiased">
+  <!-- GTM (noscript) -->
+  <noscript>
+    <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5J9B65BX" height="0" width="0"
+      style="display:none;visibility:hidden"></iframe>
+  </noscript>
+
+  <div id="root"></div>
+
+  <!-- Scroll Top -->
+  <a href="#" id="scroll-top" class="scroll-top" aria-label="Scroll to top">↑</a>
+
+  <!-- Preloader -->
+  <div id="preloader" aria-hidden="true">
+    <div class="spinner" aria-hidden="true">
+      <img src="%PUBLIC_URL%/images/dv_favicon.png" class="preloader_image" alt="DVShortyLinks" />
+    </div>
+  </div>
+
+  <!-- Tiny helper script for preloader + scroll-top -->
+  <script>
+    window.addEventListener("load", function () {
+      var p = document.getElementById("preloader");
+      if (p) p.classList.add("hidden");
+    });
+    (function () {
+      var btn = document.getElementById("scroll-top");
+      if (!btn) return;
+      window.addEventListener("scroll", function () {
+        if (window.scrollY > 300) btn.classList.add("show");
+        else btn.classList.remove("show");
+      });
+      btn.addEventListener("click", function (e) {
+        e.preventDefault();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+    })();
+  </script>
+</body>
+
+</html>

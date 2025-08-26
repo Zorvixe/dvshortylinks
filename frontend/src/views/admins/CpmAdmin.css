@@ -1,0 +1,116 @@
+/* ===== CPM Admin (Responsive) ===== */
+.cpm-admin {
+  padding: clamp(12px, 2.5vw, 24px);
+  background: #f8fafc;
+  min-height: 100dvh;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #1f2937;
+}
+
+/* Header */
+.cpm-header {
+  background: #fff;
+  border-radius: 12px;
+  padding: clamp(14px, 2vw, 20px);
+  margin-bottom: 14px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.08);
+  display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;
+}
+.cpm-header h1 {
+  font-size: clamp(18px, 2.2vw, 24px);
+  font-weight: 800; margin: 0; letter-spacing: -0.02em;
+}
+
+/* Alerts */
+.alert { padding: 10px 12px; border-radius: 10px; margin: 10px 0; font-weight: 600; }
+.alert-error { background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c; }
+.alert-success { background: #ecfdf5; border: 1px solid #a7f3d0; color: #065f46; }
+
+/* Buttons */
+.btn {
+  padding: 10px 12px; border: none; border-radius: 10px;
+  font-size: 14px; font-weight: 800; cursor: pointer; transition: transform .2s, filter .2s;
+}
+.btn:hover { transform: translateY(-1px); filter: brightness(.98); }
+.btn:disabled { opacity: .6; cursor: not-allowed; }
+.btn-primary { background: #4361ee; color: #fff; }
+.btn-secondary { background: #f3f4f6; color: #374151; border: 1px solid #e5e7eb; }
+.btn-small { padding: 8px 10px; font-size: 12px; }
+.btn-edit { background: #e0e7ff; color: #3730a3; }
+.btn-delete { background: #fee2e2; color: #991b1b; }
+
+/* Form */
+.cpm-form-container {
+  background: #fff; border-radius: 12px; padding: clamp(12px, 2vw, 16px);
+  border: 1px solid #e5e7eb; margin-bottom: 14px;
+}
+.cpm-form { display: grid; gap: 12px; }
+.form-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.form-group { display: grid; gap: 6px; }
+.form-group label { font-size: 13px; font-weight: 700; color: #374151; }
+.cpm-form input[type="text"],
+.cpm-form input[type="number"],
+.cpm-form select {
+  padding: 10px 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 14px; background: #fff;
+  transition: border-color .2s, box-shadow .2s;
+}
+.cpm-form input:focus,
+.cpm-form select:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,234,.12); }
+.checkbox-label { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; }
+.form-actions { display: flex; gap: 8px; justify-content: flex-end; }
+
+/* Table */
+.cpm-table-container {
+  background: #fff; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,.08);
+  padding: clamp(12px, 2vw, 16px);
+}
+.cpm-table-container h2 { font-size: 16px; margin: 0 0 10px 0; }
+.no-data { text-align: center; color: #6b7280; padding: 18px; }
+
+.cpm-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.cpm-table {
+  width: 100%; border-collapse: collapse; min-width: 780px; font-size: 14px;
+}
+.cpm-table thead { background: #f8f9fa; }
+.cpm-table th {
+  padding: 12px; text-align: left; font-weight: 800; color: #374151; font-size: 12px;
+  letter-spacing: .04em; text-transform: uppercase; border-bottom: 1px solid #e5e7eb;
+  position: sticky; top: 0; z-index: 1;
+}
+.cpm-table td { padding: 12px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+.cpm-table tr:hover { background: #fafafa; }
+
+.country-code {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 42px; height: 28px; border-radius: 6px; background: #f1f5f9; font-weight: 800; font-size: 12px;
+}
+.rate { font-weight: 800; color: #065f46; }
+
+/* Status toggle */
+.status-toggle {
+  padding: 8px 12px; border-radius: 999px; font-size: 12px; font-weight: 800; border: none; cursor: pointer;
+}
+.status-toggle.active { background: #d1fae5; color: #065f46; }
+.status-toggle.inactive { background: #fee2e2; color: #991b1b; }
+
+/* Inline actions */
+.action-buttons { display: flex; gap: 8px; }
+
+/* Stats summary */
+.cpm-stats {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px; margin-top: 14px;
+}
+.cpm-stats .stat-card {
+  background: #fff; border-radius: 12px; padding: 14px; border: 1px solid #e5e7eb;
+}
+.cpm-stats .stat-card h3 { margin: 0 0 6px 0; font-size: 13px; color: #6b7280; text-transform: uppercase; letter-spacing: .04em; }
+.cpm-stats .stat-card .stat-value { font-size: 20px; font-weight: 900; }
+
+/* Utility */
+.loading { text-align: center; padding: 24px; color: #6b7280; }
+
+/* Responsive */
+@media (max-width: 900px) {
+  .form-row { grid-template-columns: 1fr; }
+}

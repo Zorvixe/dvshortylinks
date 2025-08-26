@@ -1,0 +1,63 @@
+/* ===== Admin Login (Responsive) ===== */
+.admin-login-container-vad {
+  min-height: 100dvh;
+  display:flex; align-items:center; justify-content:center;
+  background: linear-gradient(135deg,#667eea 0%, #764ba2 100%);
+  padding: max(16px, env(safe-area-inset-top));
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+}
+.admin-login-card-vad {
+  background:#fff; border-radius:16px;
+  box-shadow: 0 20px 25px -5px rgba(0,0,0,.1), 0 10px 10px -5px rgba(0,0,0,.04);
+  padding: clamp(24px, 3vw, 30px);
+  width: 100%; max-width: 420px; position: relative; overflow: hidden;
+}
+.admin-login-card-vad::before {
+  content:""; position:absolute; inset:0 0 auto 0; height:4px; background: linear-gradient(90deg,#667eea,#764ba2);
+}
+.admin-login-header-vad { text-align:center; }
+.admin-logo-vad { display:flex; flex-direction:column; align-items:center; margin-bottom: 8px; }
+.logo-icon-vad {
+  width:64px; height:64px; border-radius:16px; background: linear-gradient(135deg,#667eea,#764ba2);
+  display:grid; place-items:center; font-size:28px; color:#fff; margin-bottom:12px;
+}
+.admin-login-header-vad h1 { font-size: 26px; font-weight:800; color:#1f2937; margin:0; letter-spacing:-.02em; }
+.admin-subtitle-vad { color:#6b7280; font-size:14px; margin: 6px 0 0 0; }
+
+/* Alerts */
+.error-alert-vad {
+  background:#fef2f2; border:1px solid #fecaca; color:#dc2626;
+  padding: 10px 12px; border-radius:10px; margin: 12px 0; display:flex; align-items:center; font-size: 14px;
+}
+.error-icon-vad { margin-right: 8px; }
+
+/* Form */
+.admin-login-form-vad { display:flex; flex-direction:column; gap: 10px; }
+.form-group-vad { display:flex; flex-direction:column; gap: 6px; }
+.form-label-vad { font-size: 13px; font-weight:800; color:#374151; }
+.form-input-vad {
+  padding:10px 12px; border:2px solid #e5e7eb; border-radius:10px; font-size: 15px; background:#f9fafb;
+  transition:border-color .2s, box-shadow .2s;
+}
+.form-input-vad:focus { outline:none; border-color:#667eea; background:#fff; box-shadow:0 0 0 3px rgba(102,126,234,.12); }
+.form-input-vad::placeholder { color:#9ca3af; }
+
+/* Actions */
+.login-button-vad {
+  background: linear-gradient(135deg,#667eea,#764ba2); color:#fff; border:none;
+  padding: 12px 16px; border-radius:10px; font-size:16px; font-weight:800; cursor:pointer; display:flex; place-content:center; gap:8px;
+}
+.login-button-vad:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 10px 15px -3px rgba(0,0,0,.1); }
+.login-button-vad:disabled { opacity:.7; cursor:not-allowed; }
+.spinner-vad { width: 16px; height: 16px; border:2px solid rgba(255,255,255,.4); border-top-color:#fff; border-radius:50%; animation: spin .9s linear infinite; }
+
+/* Footer & toggle */
+.admin-toggle-mode { margin-top: 10px; text-align:center; }
+.toggle-mode-btn { background: none; border: none; color:#6366f1; font-weight:700; cursor: pointer; }
+.admin-login-footer-vad { text-align:center; margin-top: 22px; padding-top: 16px; border-top:1px solid #e5e7eb; }
+.admin-login-footer-vad p { color:#9ca3af; font-size:13px; margin:0; }
+
+@media (max-width: 480px) {
+  .admin-login-card-vad { padding: 20px; }
+  .admin-login-header-vad h1 { font-size: 22px; }
+}

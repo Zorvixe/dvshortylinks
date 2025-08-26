@@ -1,0 +1,26 @@
+/* ===== Page Layout With Sidebar ===== */
+.page-with-sidebar {
+  display: flex;
+  min-height: 100dvh;
+  background: #f8f9fa;
+}
+
+/* Sidebar spacing */
+.page-with-sidebar .page-content {
+  flex: 1;
+  padding: clamp(12px, 2vw, 20px);
+  margin-left: 280px; /* default sidebar width */
+  transition: margin-left 0.25s ease;
+}
+
+/* Collapsed sidebar (desktop) */
+.admin-sidebar-amdm.collapsed-amdm ~ .page-content {
+  margin-left: 80px;
+}
+
+/* Mobile: overlay mode, no margin */
+@media (max-width: 768px) {
+  .page-with-sidebar .page-content {
+    margin-left: 0;
+  }
+}

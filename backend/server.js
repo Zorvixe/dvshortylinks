@@ -90,8 +90,8 @@ app.use(passport.initialize())
 app.use(passport.session())
 
 // JWT and Admin secrets
-const JWT_SECRET = process.env.JWT_SECRET || crypto.randomBytes(32).toString("hex")
-const ADMIN_SECRET = crypto.randomBytes(32).toString("hex")
+const JWT_SECRET = process.env.JWT_SECRET || "dev_only_change_me_in_prod";
+const ADMIN_SECRET = process.env.ADMIN_SECRET || "dev_admin_change_me_in_prod";
 
 // Passport serialization
 passport.serializeUser((user, done) => {
@@ -612,6 +612,8 @@ function configureOAuthStrategies() {
   )
 }
 
+
+
 // --- ADMIN ROUTES ---
 
 // Admin registration
@@ -699,6 +701,27 @@ app.post("/api/admin/login", async (req, res) => {
     res.status(500).json({ error: "Server error" })
   }
 })
+
+app.get("/api/me", authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const result = await pool.query(
+      `SELECT id, username, email, is_premium, balance, referral_code
+       FROM users
+       WHERE id = $1`,
+      [userId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.json({ user: result.rows[0] });
+  } catch (error) {
+    logger.error(`GET /api/me failed: ${error.message}`);
+    res.status(500).json({ error: "Server error" });
+  }
+});
 
 // Admin dashboard stats
 app.get("/api/admin/dashboard/overview", authenticateAdmin, async (req, res) => {

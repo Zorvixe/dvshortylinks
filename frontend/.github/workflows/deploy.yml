@@ -1,0 +1,39 @@
+name: Auto Deploy to VPS
+
+on:
+  push:
+    branches:
+      - main   # or master, depending on your default branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.5.4
+        with:
+          ssh-private-key: ${{ secrets.VPS_KEY }}
+
+      - name: Deploy Backend
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
+            cd ${{ secrets.VPS_APP_PATH }}
+            git pull origin main
+            npm install --production
+            pm2 restart dvshorty-backend || pm2 start server.js --name dvshorty-backend
+          EOF
+
+      - name: Deploy Frontend
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
+            cd /var/www/dvshortylinks/frontend
+            git pull origin main
+            cd frontend   # adjust if your React app is inside /frontend folder
+            npm install
+            npm run build
+            cp -r build/* /var/www/dvshortylinks/frontend/
+          EOF

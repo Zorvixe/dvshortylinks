@@ -38,13 +38,20 @@ app.use(helmet())
 app.use(express.json({ limit: "10kb" }))
 
 // Database connection with enhanced configuration
+const useSsl =
+  // force if DATABASE_URL points to a managed host (Render, Railway, Neon, etc.)
+  /render\.com|neon\.tech|railway\.app|supabase\.co|rds\.amazonaws\.com/i.test(process.env.DATABASE_URL || "") ||
+  process.env.PGSSLMODE === "require" ||
+  process.env.NODE_ENV === "production";
+
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false, // This bypasses certificate verification
-  },
+  ssl: useSsl ? { rejectUnauthorized: false } : false, // SSL for remote, off for true local
+  keepAlive: true,
+  max: parseInt(process.env.PGPOOL_MAX || "10", 10),
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 10000,
 });
-
 // CORS configuration
 const corsOptions = {
   origin: "*",
@@ -2939,17 +2946,19 @@ app.post("/api/contact", async (req, res) => {
   }
 })
 
+// --- Admin self profile + updates ---
+
 // GET /api/admin/me -> { admin }
 app.get("/api/admin/me", authenticateAdmin, async (req, res) => {
   try {
-    const { id } = req.admin;
-    const result = await pool.query(
+    const adminId = req.admin.adminId; // <- use adminId from JWT
+    const { rows } = await pool.query(
       `SELECT id, username, email, created_at, last_login
        FROM admins WHERE id = $1`,
-      [id]
+      [adminId]
     );
-    if (!result.rows.length) return res.status(404).json({ error: "Admin not found" });
-    res.json({ admin: result.rows[0] });
+    if (!rows.length) return res.status(404).json({ error: "Admin not found" });
+    res.json({ admin: rows[0] });
   } catch (e) {
     console.error("GET /api/admin/me", e);
     res.status(500).json({ error: "Server error" });
@@ -2959,56 +2968,64 @@ app.get("/api/admin/me", authenticateAdmin, async (req, res) => {
 // PUT /api/admin/profile { username, email } -> { success, admin }
 app.put("/api/admin/profile", authenticateAdmin, async (req, res) => {
   try {
-    const { id } = req.admin;
+    const adminId = req.admin.adminId;
     const { username, email } = req.body || {};
     if (!username || !email) {
       return res.status(400).json({ error: "username and email are required" });
     }
 
-    // uniqueness checks
+    // Uniqueness checks against other admins
     const dupUser = await pool.query(
-      "SELECT id FROM admins WHERE username = $1 AND id != $2",
-      [username, id]
+      "SELECT 1 FROM admins WHERE username = $1 AND id <> $2",
+      [username, adminId]
     );
-    if (dupUser.rows.length) return res.status(400).json({ error: "Username already taken" });
+    if (dupUser.rows.length) {
+      return res.status(400).json({ error: "Username already taken" });
+    }
 
     const dupEmail = await pool.query(
-      "SELECT id FROM admins WHERE email = $1 AND id != $2",
-      [email, id]
+      "SELECT 1 FROM admins WHERE email = $1 AND id <> $2",
+      [email, adminId]
     );
-    if (dupEmail.rows.length) return res.status(400).json({ error: "Email already in use" });
+    if (dupEmail.rows.length) {
+      return res.status(400).json({ error: "Email already in use" });
+    }
 
-    const updated = await pool.query(
+    const { rows } = await pool.query(
       `UPDATE admins
        SET username = $1, email = $2
        WHERE id = $3
        RETURNING id, username, email, created_at, last_login`,
-      [username, email, id]
+      [username, email, adminId]
     );
 
-    res.json({ success: true, admin: updated.rows[0] });
+    res.json({ success: true, admin: rows[0] });
   } catch (e) {
     console.error("PUT /api/admin/profile", e);
     res.status(500).json({ error: "Server error" });
   }
 });
+
 // PUT /api/admin/password { current_password, new_password } -> { success }
 app.put("/api/admin/password", authenticateAdmin, async (req, res) => {
   try {
-    const { id } = req.admin;
+    const adminId = req.admin.adminId;
     const { current_password, new_password } = req.body || {};
     if (!current_password || !new_password) {
       return res.status(400).json({ error: "current_password and new_password are required" });
     }
+    if (String(new_password).length < 8) {
+      return res.status(400).json({ error: "New password must be at least 8 characters" });
+    }
 
-    const row = await pool.query("SELECT password FROM admins WHERE id = $1", [id]);
+    const row = await pool.query("SELECT password FROM admins WHERE id = $1", [adminId]);
     if (!row.rows.length) return res.status(404).json({ error: "Admin not found" });
 
     const ok = await bcrypt.compare(current_password, row.rows[0].password);
     if (!ok) return res.status(400).json({ error: "Current password is incorrect" });
 
     const hash = await bcrypt.hash(new_password, 12);
-    await pool.query("UPDATE admins SET password = $1 WHERE id = $2", [hash, id]);
+    await pool.query("UPDATE admins SET password = $1 WHERE id = $2", [hash, adminId]);
 
     res.json({ success: true });
   } catch (e) {

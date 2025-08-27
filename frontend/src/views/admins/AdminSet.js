@@ -1,11 +1,13 @@
 // src/views/admin/AdminSet.js
 "use client";
 import { useEffect, useState } from "react";
-import "./AdminSet.css"
+import { useNavigate } from "react-router-dom";
+import "./AdminSet.css";
 
 export default function AdminSet() {
   const API = process.env.REACT_APP_API_URL || "http://localhost:5000";
   const token = localStorage.getItem("adminToken");
+  const navigate = useNavigate();
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -24,9 +26,11 @@ export default function AdminSet() {
         });
         if (res.status === 401 || res.status === 403) {
           setError("Session expired. Please log in again.");
+          // brief delay so user can see the message
+          setTimeout(() => navigate("/adminlogin"), 800);
           return;
         }
-        if (!res.ok) throw new Error(await res.text());
+        if (!res.ok) throw new Error((await res.text()) || "Failed to load admin details");
         const data = await res.json();
         setForm({
           username: data.admin?.username || "",
@@ -38,8 +42,9 @@ export default function AdminSet() {
         setLoading(false);
       }
     })();
-  }, [API, token]);
+  }, [API, token, navigate]);
 
+  // FIX: correct spread in the change handlers
   const onChange = (e) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
   const onChangePw = (e) => setPw((p) => ({ ...p, [e.target.name]: e.target.value }));
 

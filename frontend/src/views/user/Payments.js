@@ -258,9 +258,9 @@ const Payments = () => {
                 className="form-select"
                 required
               >
-                <option value="paypal">PayPal</option>
+                <option value="paypal">PhonePe</option>
                 <option value="bank">Bank Transfer</option>
-                <option value="crypto">Cryptocurrency</option>
+                <option value="crypto">GPay</option>
               </select>
             </div>
           </div>
@@ -280,10 +280,10 @@ const Payments = () => {
               onChange={handleWithdrawalChange}
               placeholder={
                 withdrawalData.method === "paypal"
-                  ? "your-email@example.com"
+                  ? "Upi Id"
                   : withdrawalData.method === "bank"
                     ? "Account Number, Routing Number, Bank Name"
-                    : "Your wallet address"
+                    : "Upi Id"
               }
               className="form-input"
               required

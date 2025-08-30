@@ -1,4 +1,4 @@
-// src/components/AdSlot.jsx
+// src/AdSlot.js
 "use client";
 import { useEffect, useRef } from "react";
 
@@ -14,12 +14,12 @@ export default function AdSlot({
   format = "auto",
   fullWidth = true,
   style = {},
-  test = false,      // pass true to force data-adtest="on" while testing
+  test = false,
 }) {
   const ref = useRef(null);
 
   useEffect(() => {
-    // 1) ensure loader script exists (for THIS page only)
+    // Ensure loader script exists
     if (!document.querySelector('script[data-adsbygoogle]')) {
       const s = document.createElement("script");
       s.async = true;
@@ -31,16 +31,15 @@ export default function AdSlot({
         try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch {}
       };
     } else {
-      // 2) loader already present → push a request
       try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch {}
     }
   }, [client, slot]);
 
   const baseStyle = {
     display: "block",
-    minHeight: 250,         // make room so it can render reliably
+    minHeight: 250,
     width: "100%",
-    ...style,
+    ...style,           // <-- FIXED
   };
 
   return (

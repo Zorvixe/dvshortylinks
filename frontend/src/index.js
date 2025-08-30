@@ -17,6 +17,7 @@ import Index from "./views/Index"
 import AuthCallback from "./contexts/AuthCallback"
 import NotFound from "views/user/NotFound"
 import AdRedirect from "views/user/AdRedirect"
+import FinalRedirect from "views/user/FinalRedirect"
 import { trackPageview } from "./analytics"
 
 // admins
@@ -66,6 +67,7 @@ ReactDOM.render(
         {/* Public */}
         <Route path="/:shortCode" element={<ShortUrlRedirect />} />
         <Route path="/go/:slug" element={<AdRedirect />} />
+        <Route path="/final-redirect/:slug" element={<FinalRedirect />} />
         <Route path="/auth/*" element={<Auth />} />
         <Route path="/auth-callback" element={<AuthCallback />} />
         <Route path="/profile" element={<Profile />} />

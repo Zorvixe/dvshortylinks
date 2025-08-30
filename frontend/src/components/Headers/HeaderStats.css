@@ -1,90 +1,384 @@
-/* Custom Button Styles */
-.btn-telegram {
+/* ===========================
+   Quick Shorten Card Styles
+   =========================== */
+
+.quk-card {
+  position: relative;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.08);
+  transition: transform 120ms ease, box-shadow 180ms ease, border-color 180ms ease;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.quk-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.10);
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+/* Subtle glow frame */
+.quk-card::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: 18px;
+  background: linear-gradient(120deg, rgba(37,99,235,.25), rgba(16,185,129,.25));
+  filter: blur(18px);
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 220ms ease;
+}
+
+.quk-card:hover::before { 
+  opacity: .65; 
+}
+
+/* Card header */
+.quk-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.quk-card-icon {
+  height: 2.5rem;
+  width: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.75rem;
+  background-color: #2563eb;
+  color: white;
+}
+
+.quk-card-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.25;
+  margin: 0;
+}
+
+.quk-card-subtitle {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* Notice */
+.quk-notice {
+  margin-bottom: 1rem;
+  border-radius: 0.75rem;
+  padding: 0.875rem 1rem;
+  font-size: 0.875rem;
+  border-width: 1px;
+}
+
+.quk-notice-success {
+  border-color: #bbf7d0;
+  background-color: #f0fdf4;
+  color: #15803d;
+}
+
+.quk-notice-error {
+  border-color: #fecaca;
+  background-color: #fef2f2;
+  color: #dc2626;
+}
+
+/* Form */
+.quk-form {
+  margin-bottom: 1rem;
+}
+
+.quk-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+@media (min-width: 768px) {
+  .quk-input-group {
+    flex-direction: row;
+  }
+}
+
+/* Input */
+.quk-input {
+  flex: 1;
+  border-radius: 0.75rem;
+  border: 1px solid #d1d5db;
+  padding: 0.75rem 1rem;
+  outline: none;
+  transition: border-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+  background: #fff;
+  font-size: 1rem;
+}
+
+.quk-input::placeholder { 
+  color: #9ca3af; 
+}
+
+.quk-input:focus {
+  border-color: #2563eb !important;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+}
+
+/* Button */
+.quk-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.75rem;
+  background-color: #2563eb;
+  color: white;
+  font-weight: 600;
+  padding: 0.75rem 1.25rem;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 12px 24px rgba(37, 99, 235, 0.20);
+  transition: transform 90ms ease, box-shadow 160ms ease, background-color 160ms ease;
+  font-size: 1rem;
+  white-space: nowrap;
+}
+
+.quk-btn:hover {
+  background-color: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+.quk-btn:active { 
+  transform: translateY(0); 
+}
+
+.quk-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.quk-btn-spinner {
+  height: 1rem;
+  width: 1rem;
+  animation: spin 1s linear infinite;
+  border: 2px solid white;
+  border-top-color: transparent;
+  border-radius: 50%;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Result group */
+.quk-result-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+@media (min-width: 768px) {
+  .quk-result-group {
+    flex-direction: row;
+  }
+}
+
+.quk-result-input {
+  flex: 1;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  background: white;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  color: #1f2937;
+}
+
+/* Copy button */
+.quk-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(16, 185, 129, 0.45);
+  background: white;
+  color: #15803d;
+  font-weight: 600;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  transition: background-color 140ms ease, border-color 140ms ease, transform 80ms ease;
+  font-size: 0.875rem;
+  white-space: nowrap;
+}
+
+.quk-copy-btn:hover {
+  background: #ecfdf5;
+  transform: translateY(-1px);
+}
+
+.quk-copy-btn:active { 
+  transform: translateY(0); 
+}
+
+/* ===========================
+   Community CTA Styles
+   =========================== */
+
+.quk-cta-container {
+  background: linear-gradient(135deg, #2c3e50 0%, #1a1a2e 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2), 0 6px 6px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 500px;
+  margin: 0 auto;
+  margin-top: 1rem;
+}
+
+.quk-cta-text {
+  color: white;
+  margin-bottom: 0.75rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  text-align: center;
+}
+
+.quk-cta-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+  align-items: center;
+}
+
+@media (min-width: 768px) {
+  .quk-cta-buttons {
+    flex-direction: row;
+    justify-content: center;
+    gap: 1rem;
+  }
+}
+
+.quk-telegram-btn, .quk-whatsapp-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  font-weight: 700;
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  width: 200px;
+  text-align: center;
+}
+
+.quk-telegram-btn {
   background-color: #0088cc;
   color: white;
   border: none;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  margin: 0 auto; /* Center button in flex container */
-  margin-right: 20px;
 }
 
-.btn-telegram:hover {
+.quk-telegram-btn:hover {
   background-color: #0077b5;
   color: white;
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
-.btn-telegram:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
-}
-
-.btn-whatsapp {
+.quk-whatsapp-btn {
   background-color: #25D366;
   color: white;
   border: none;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  margin: 0 auto; /* Center button in flex container */
 }
 
-.btn-whatsapp:hover {
+.quk-whatsapp-btn:hover {
   background-color: #128C7E;
   color: white;
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
-.btn-whatsapp:active {
+.quk-telegram-btn:active, .quk-whatsapp-btn:active {
   transform: translateY(0);
   box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
 }
 
-/* Container Styles */
-.bg-dark {
-  background: linear-gradient(135deg, #2c3e50 0%, #1a1a2e 100%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  display: flex;
-  flex-direction: column;
-  align-items: center; /* Center children horizontally */
+.quk-telegram-btn:focus-visible, .quk-whatsapp-btn:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.35);
 }
 
-.rounded-3 {
-  border-radius: 1rem !important;
-  max-width: 500px; /* Limit container width */
-  margin: 0 auto; /* Center container */
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .quk-card,
+  .quk-card::before,
+  .quk-input,
+  .quk-btn,
+  .quk-copy-btn,
+  .quk-telegram-btn,
+  .quk-whatsapp-btn {
+    transition: none !important;
+  }
 }
 
-.shadow-lg {
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2), 
-              0 6px 6px rgba(0, 0, 0, 0.25) !important;
-}
-
-/* Text Styles */
-.text-white {
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-  text-align: center; /* Ensure text is centered */
-}
-
-/* Responsive Adjustments */
-@media (max-width: 767.98px) {
-  .gap-3 {
-    gap: 1rem !important;
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .quk-card {
+    background: #0b1220;
+    border-color: rgba(255, 255, 255, 0.06);
+    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.35);
   }
   
-  .py-2 {
-    padding-top: 0.75rem !important;
-    padding-bottom: 0.75rem !important;
+  .quk-card-subtitle {
+    color: #94a3b8;
   }
   
-  .btn-telegram,
-  .btn-whatsapp {
-    width: 100% !important; /* Full width on mobile */
-    max-width: 250px; /* But limit maximum width */
+  .quk-input {
+    background: #0f172a;
+    color: #e5e7eb;
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+  
+  .quk-input::placeholder { 
+    color: #94a3b8; 
+  }
+  
+  .quk-result-input {
+    background: #0f172a;
+    color: #e5e7eb;
+    border-color: rgba(16, 185, 129, 0.35);
+  }
+  
+  .quk-copy-btn {
+    background: #0f172a;
+    color: #86efac;
+    border-color: rgba(16, 185, 129, 0.45);
+  }
+  
+  .quk-copy-btn:hover {
+    background: #064e3b;
   }
 }
 
-/* Font Awesome Icons */
-@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css');
+/* Mobile responsiveness */
+@media (max-width: 767px) {
+  .quk-card {
+    padding: 1.25rem;
+  }
+  
+  .quk-telegram-btn, .quk-whatsapp-btn {
+    width: 100%;
+    max-width: 250px;
+  }
+}

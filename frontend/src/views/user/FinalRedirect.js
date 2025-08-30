@@ -12,9 +12,9 @@ const FinalRedirect = () => {
   useEffect(() => {
     const handleRedirect = async () => {
       try {
-        const res = await fetch(`${apiUrl}/api/resolve/${slug}`);
-        const data = await res.json();
-        if (res.ok && data.originalUrl) {
+        const response = await fetch(`${apiUrl}/api/resolve/${slug}`);
+        const data = await response.json();
+        if (response.ok && data.originalUrl) {
           window.location.replace(data.originalUrl);
         } else {
           setError(data.error || "Link not found");

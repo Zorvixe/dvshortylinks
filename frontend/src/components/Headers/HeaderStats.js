@@ -9,9 +9,12 @@ import {
   Calendar,
   TrendingUp,
   Users,
+  Link2 as LinkIcon,
+  Check,
+  Copy,
 } from "lucide-react";
 
-import "./HeaderStats.css"
+import "./HeaderStats.css";
 
 export default function HeaderStats() {
   const { user, loading: authLoading } = useAuth();
@@ -21,18 +24,23 @@ export default function HeaderStats() {
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Quick Shorten states
+  const [urlInput, setUrlInput] = useState("");
+  const [shortLoading, setShortLoading] = useState(false);
+  const [shortResult, setShortResult] = useState("");
+  const [copied, setCopied] = useState(false);
+  const [notice, setNotice] = useState({ show: false, msg: "", type: "success" });
+
   useEffect(() => {
     fetchDashboardData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchDashboardData = async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/dashboard`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
-
       if (response.ok) {
         const data = await response.json();
         setDashboardData(data);
@@ -44,6 +52,76 @@ export default function HeaderStats() {
     }
   };
 
+  // ---------- Quick Shorten ----------
+  const showNotice = (msg, type = "success") => {
+    setNotice({ show: true, msg, type });
+    setTimeout(() => setNotice({ show: false, msg: "", type }), 2500);
+  };
+
+  const isValidUrl = (val) => {
+    try {
+      const test = /^https?:\/\//i.test(val) ? val : `https://${val}`;
+      new URL(test);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  const handleShorten = async (e) => {
+    e.preventDefault();
+    const value = urlInput.trim();
+    if (!value || !isValidUrl(value)) {
+      showNotice("Please enter a valid URL.", "error");
+      return;
+    }
+
+    setShortLoading(true);
+    setShortResult("");
+    setCopied(false);
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/shorten`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ url: value }),
+      });
+
+      const data = await res.json();
+      const composed =
+        data?.shortenedUrl ||
+        data?.short_url ||
+        (data?.shortCode ? `${window.location.origin}/${data.shortCode}` : "");
+
+      if (res.ok && composed) {
+        setShortResult(composed);
+        setUrlInput("");
+        showNotice("Short link created!", "success");
+      } else {
+        showNotice(data?.error || "Failed to shorten URL", "error");
+      }
+    } catch {
+      showNotice("Network error. Please try again.", "error");
+    } finally {
+      setShortLoading(false);
+    }
+  };
+
+  const copyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(shortResult);
+      setCopied(true);
+      showNotice("Copied to clipboard!", "success");
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      showNotice("Failed to copy", "error");
+    }
+  };
+
+  // ---------- Stats cards ----------
   const stats = [
     {
       title: "Current Balance",
@@ -98,8 +176,86 @@ export default function HeaderStats() {
       {/* Header */}
       <div className="relative bg-lightBlue-600 md:pt-32 pb-32 pt-12">
         <div className="px-4 md:px-10 mx-auto w-full">
+          {/* --- BIG Quick Shorten Card --- */}
+          <div className="w-full mb-8">
+            <div className="quk-card">
+              <div className="quk-card-header">
+                <div className="quk-card-icon">
+                  <LinkIcon size={20} />
+                </div>
+                <div>
+                  <h3 className="quk-card-title">Quick Shorten</h3>
+                  <p className="quk-card-subtitle">Paste your long URL, shorten, and copy.</p>
+                </div>
+              </div>
+
+              {/* Notice */}
+              {notice.show && (
+                <div className={`quk-notice quk-notice-${notice.type}`} aria-live="polite">
+                  {notice.msg}
+                </div>
+              )}
+
+              <form onSubmit={handleShorten} className="quk-form">
+                <div className="quk-input-group">
+                  <input
+                    type="url"
+                    inputMode="url"
+                    placeholder="https://example.com/very/long/url"
+                    value={urlInput}
+                    onChange={(e) => setUrlInput(e.target.value)}
+                    className="quk-input"
+                    required
+                  />
+                  <button
+                    type="submit"
+                    disabled={shortLoading}
+                    className="quk-btn"
+                  >
+                    {shortLoading ? (
+                      <>
+                        <span className="quk-btn-spinner"></span>
+                        Shortening…
+                      </>
+                    ) : (
+                      <>
+                        <i className="fas fa-compress-alt"></i>
+                        Shorten
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+
+              {shortResult && (
+                <div className="quk-result-group">
+                  <input
+                    readOnly
+                    value={shortResult}
+                    className="quk-result-input"
+                  />
+                  <button
+                    onClick={copyToClipboard}
+                    className="quk-copy-btn"
+                    type="button"
+                  >
+                    {copied ? (
+                      <>
+                        <Check size={16} /> Copied
+                      </>
+                    ) : (
+                      <>
+                        <Copy size={16} /> Copy
+                      </>
+                    )}
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Card stats */}
           <div>
-            {/* Card stats */}
             <div className="flex flex-wrap">
               {stats.map((stat, index) => (
                 <div key={index} className="w-full md:w-6/12 xl:w-4/12 px-4 mb-6">
@@ -116,30 +272,28 @@ export default function HeaderStats() {
                 </div>
               ))}
             </div>
-            <div className="mt-4 p-4 bg-dark rounded-3 shadow-lg text-center">
-              <p className="text-white mb-3 fs-5 fw-semibold">
-                📢 Join our community for updates & support
-              </p>
-              <div className="d-flex flex-column flex-md-row gap-3 justify-content-center">
+
+            {/* Community CTA */}
+            <div className="quk-cta-container">
+              <p className="quk-cta-text">📢 Join our community for updates & support</p>
+              <div className="quk-cta-buttons">
                 <a
                   href="https://t.me/DvShortyLinks_Help"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="btn btn-telegram text-center py-2 px-3 rounded-pill fw-bold d-flex align-items-center justify-content-center gap-2"
-                  style={{ width: '200px' }}
+                  className="quk-telegram-btn"
                 >
-                  <i className="fab fa-telegram fs-5"></i>
+                  <i className="fab fa-telegram"></i>
                   Telegram
                 </a>
-               <a
-                  href="https://t.me/DvShortyLinks_Help"
+                <a
+                  href="https://wa.me/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="btn btn-telegram text-center py-2 px-3 rounded-pill fw-bold d-flex align-items-center justify-content-center gap-2"
-                  style={{ width: '200px' }}
+                  className="quk-whatsapp-btn"
                 >
-                  <i className="fab fa-telegram fs-5"></i>
-                  Telegram
+                  <i className="fab fa-whatsapp"></i>
+                  WhatsApp
                 </a>
               </div>
             </div>

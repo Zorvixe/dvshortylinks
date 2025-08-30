@@ -1,82 +1,85 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { useAuth } from "../../contexts/AuthContext"
-import "../../assets/Payments.css"
+import { useState, useEffect } from "react";
+import { useAuth } from "../../contexts/AuthContext";
+import "../../assets/Payments.css";
 
 const Payments = () => {
-  const { token, API_BASE_URL, user } = useAuth()
-  const [payments, setPayments] = useState([])
-  const [loading, setLoading] = useState(true)
+  const { token, API_BASE_URL, user } = useAuth();
+
+  // --- constants / derived ---
+  const MIN_WITHDRAWAL = 10; // change to user?.is_premium ? 5 : 10 if you want dynamic min
+  const balance = Number.parseFloat(user?.balance || 0);
+  const canWithdraw = balance >= MIN_WITHDRAWAL;
+
+  // --- state ---
+  const [payments, setPayments] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [withdrawalData, setWithdrawalData] = useState({
     amount: "",
-    method: "paypal",
+    method: "paypal", // labels show PhonePe/GPay but backend key stays 'paypal'/'crypto'/'bank'
     account: "",
-  })
-  const [submitting, setSubmitting] = useState(false)
-  const [notification, setNotification] = useState({ show: false, message: "", type: "" })
+  });
+  const [submitting, setSubmitting] = useState(false);
+  const [notification, setNotification] = useState({ show: false, message: "", type: "" });
 
   const showNotification = (message, type = "success") => {
-    setNotification({ show: true, message, type })
-    setTimeout(() => {
-      setNotification({ show: false, message: "", type: "" })
-    }, 3000)
-  }
+    setNotification({ show: true, message, type });
+    setTimeout(() => setNotification({ show: false, message: "", type: "" }), 3000);
+  };
 
   useEffect(() => {
-    fetchPayments()
-  }, [])
+    fetchPayments();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const fetchPayments = async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/payments`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       if (response.ok) {
-        const data = await response.json()
-        // Ensure payments is always an array
-        setPayments(Array.isArray(data) ? data : [])
+        const data = await response.json();
+        // Accept either an array or { withdrawals: [...] }
+        const list = Array.isArray(data?.withdrawals) ? data.withdrawals : Array.isArray(data) ? data : [];
+        setPayments(list);
       } else {
-        showNotification("Failed to fetch payment history", "error")
-        setPayments([]) // Set to empty array on error
+        showNotification("Failed to fetch payment history", "error");
+        setPayments([]);
       }
     } catch (error) {
-      console.error("Failed to fetch payments:", error)
-      showNotification("Network error while fetching payments", "error")
-      setPayments([]) // Set to empty array on error
+      console.error("Failed to fetch payments:", error);
+      showNotification("Network error while fetching payments", "error");
+      setPayments([]);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleWithdrawalChange = (e) => {
-    setWithdrawalData({
-      ...withdrawalData,
-      [e.target.name]: e.target.value,
-    })
-  }
+    setWithdrawalData({ ...withdrawalData, [e.target.name]: e.target.value });
+  };
 
   const handleWithdrawalSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    const amount = Number.parseFloat(withdrawalData.amount)
-    const minWithdrawal = 10
-    const userBalance = Number.parseFloat(user?.balance || 0)
+    const amount = Number.parseFloat(withdrawalData.amount || 0);
 
-    if (amount < minWithdrawal) {
-      showNotification(`Minimum withdrawal amount is $${minWithdrawal}`, "error")
-      return
+    if (!canWithdraw) {
+      showNotification(`You need at least $${MIN_WITHDRAWAL} to withdraw.`, "error");
+      return;
+    }
+    if (amount < MIN_WITHDRAWAL) {
+      showNotification(`Minimum withdrawal amount is $${MIN_WITHDRAWAL}`, "error");
+      return;
+    }
+    if (amount > balance) {
+      showNotification("Insufficient balance for withdrawal", "error");
+      return;
     }
 
-    if (amount > userBalance) {
-      showNotification("Insufficient balance for withdrawal", "error")
-      return
-    }
-
-    setSubmitting(true)
+    setSubmitting(true);
     try {
       const response = await fetch(`${API_BASE_URL}/api/withdraw`, {
         method: "POST",
@@ -84,54 +87,59 @@ const Payments = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(withdrawalData),
-      })
+        body: JSON.stringify({
+          amount,
+          method: withdrawalData.method,
+          // IMPORTANT: backend expects accountDetails
+          accountDetails: withdrawalData.account,
+        }),
+      });
 
-      const data = await response.json()
+      const data = await response.json();
 
       if (response.ok) {
-        showNotification("Withdrawal request submitted successfully!", "success")
-        setWithdrawalData({ amount: "", method: "paypal", account: "" })
-        fetchPayments()
+        showNotification("Withdrawal request submitted successfully!", "success");
+        setWithdrawalData({ amount: "", method: "paypal", account: "" });
+        fetchPayments();
       } else {
-        showNotification(data.error || "Failed to submit withdrawal request", "error")
+        showNotification(data.error || "Failed to submit withdrawal request", "error");
       }
     } catch (error) {
-      showNotification("Network error. Please try again.", "error")
+      showNotification("Network error. Please try again.", "error");
     } finally {
-      setSubmitting(false)
+      setSubmitting(false);
     }
-  }
+  };
 
   const getStatusColor = (status) => {
-    if (!status) return "pending"
+    if (!status) return "pending";
     switch (status.toLowerCase()) {
       case "completed":
-        return "completed"
+        return "completed";
       case "pending":
-        return "pending"
+        return "pending";
       case "cancelled":
       case "rejected":
-        return "rejected"
+        return "rejected";
       default:
-        return "pending"
+        return "pending";
     }
-  }
+  };
 
   const getStatusIcon = (status) => {
-    if (!status) return "fa-clock"
+    if (!status) return "fa-clock";
     switch (status.toLowerCase()) {
       case "completed":
-        return "fa-check-circle"
+        return "fa-check-circle";
       case "pending":
-        return "fa-clock"
+        return "fa-clock";
       case "cancelled":
       case "rejected":
-        return "fa-times-circle"
+        return "fa-times-circle";
       default:
-        return "fa-clock"
+        return "fa-clock";
     }
-  }
+  };
 
   if (loading) {
     return (
@@ -141,21 +149,21 @@ const Payments = () => {
           <p>Loading payment information...</p>
         </div>
       </div>
-    )
+    );
   }
 
-  // Calculate totals with proper null checks
+  // totals
   const totalEarnings = Array.isArray(payments)
     ? payments
-        .filter((payment) => payment?.status?.toLowerCase() === "completed")
-        .reduce((sum, payment) => sum + Number.parseFloat(payment?.amount || 0), 0)
-    : 0
+        .filter((p) => p?.status?.toLowerCase() === "completed")
+        .reduce((sum, p) => sum + Number.parseFloat(p?.amount || 0), 0)
+    : 0;
 
   const pendingAmount = Array.isArray(payments)
     ? payments
-        .filter((payment) => payment?.status?.toLowerCase() === "pending")
-        .reduce((sum, payment) => sum + Number.parseFloat(payment?.amount || 0), 0)
-    : 0
+        .filter((p) => p?.status?.toLowerCase() === "pending")
+        .reduce((sum, p) => sum + Number.parseFloat(p?.amount || 0), 0)
+    : 0;
 
   return (
     <div className="payments-container">
@@ -185,7 +193,7 @@ const Payments = () => {
           </div>
           <div className="balance-content">
             <p className="balance-label">Available Balance</p>
-            <p className="balance-value">${Number.parseFloat(user?.balance || 0).toFixed(2)}</p>
+            <p className="balance-value">${balance.toFixed(2)}</p>
           </div>
         </div>
 
@@ -218,7 +226,7 @@ const Payments = () => {
           </div>
           <div className="header-text">
             <h2 className="card-title">Request Withdrawal</h2>
-            <p className="card-description">Minimum withdrawal amount is $10.00</p>
+            <p className="card-description">Minimum withdrawal amount is ${MIN_WITHDRAWAL.toFixed(2)}</p>
           </div>
         </div>
 
@@ -234,15 +242,21 @@ const Payments = () => {
                 name="amount"
                 type="number"
                 step="0.01"
-                min="10"
-                max={user?.balance || 0}
+                min={MIN_WITHDRAWAL}
+                {...(canWithdraw ? { max: balance } : {})} // only set max when valid
                 value={withdrawalData.amount}
                 onChange={handleWithdrawalChange}
-                placeholder="10.00"
+                placeholder={MIN_WITHDRAWAL.toFixed(2)}
                 className="form-input"
                 required
+                disabled={!canWithdraw}
               />
-              <p className="form-hint">Available: ${Number.parseFloat(user?.balance || 0).toFixed(2)}</p>
+              <p className="form-hint">
+                Available: ${balance.toFixed(2)}
+                {!canWithdraw && (
+                  <span className="ml-2 text-red-600">You need at least ${MIN_WITHDRAWAL} to withdraw.</span>
+                )}
+              </p>
             </div>
 
             <div className="form-group">
@@ -258,6 +272,7 @@ const Payments = () => {
                 className="form-select"
                 required
               >
+                {/* Keep keys as your backend expects, labels localized */}
                 <option value="paypal">PhonePe</option>
                 <option value="bank">Bank Transfer</option>
                 <option value="crypto">GPay</option>
@@ -268,9 +283,7 @@ const Payments = () => {
           <div className="form-group">
             <label htmlFor="account" className="form-label">
               <i className="fas fa-user"></i>
-              {withdrawalData.method === "paypal" && "PayPal Email"}
-              {withdrawalData.method === "bank" && "Bank Account Details"}
-              {withdrawalData.method === "crypto" && "Wallet Address"}
+              {withdrawalData.method === "bank" ? "Bank Account Details" : "UPI / Wallet"}
             </label>
             <input
               id="account"
@@ -279,18 +292,17 @@ const Payments = () => {
               value={withdrawalData.account}
               onChange={handleWithdrawalChange}
               placeholder={
-                withdrawalData.method === "paypal"
-                  ? "Upi Id"
-                  : withdrawalData.method === "bank"
-                    ? "Account Number, Routing Number, Bank Name"
-                    : "Upi Id"
+                withdrawalData.method === "bank"
+                  ? "Account Number, IFSC / Routing, Bank Name"
+                  : "UPI ID (e.g., name@bank) or Wallet"
               }
               className="form-input"
               required
+              disabled={!canWithdraw}
             />
           </div>
 
-          <button type="submit" disabled={submitting} className="submit-btn">
+          <button type="submit" disabled={submitting || !canWithdraw} className="submit-btn">
             {submitting ? (
               <>
                 <div className="loading-spinner"></div>
@@ -330,34 +342,39 @@ const Payments = () => {
           ) : (
             <div className="payments-list">
               {Array.isArray(payments) &&
-                payments.map((payment, index) => (
-                  <div key={index} className="payment-item">
-                    <div className="payment-info">
-                      <div className="payment-details">
-                        <div className="payment-amount">
-                          <span className="amount">${Number.parseFloat(payment?.amount || 0).toFixed(2)}</span>
-                          <span className="method">{payment?.method || "Unknown"}</span>
+                payments.map((payment, index) => {
+                  const created =
+                    payment?.created_at || payment?.createdAt || payment?.createdOn || payment?.created || null;
+                  const account = payment?.account ?? payment?.account_details ?? "Unknown account";
+                  return (
+                    <div key={index} className="payment-item">
+                      <div className="payment-info">
+                        <div className="payment-details">
+                          <div className="payment-amount">
+                            <span className="amount">
+                              ${Number.parseFloat(payment?.amount || 0).toFixed(2)}
+                            </span>
+                            <span className="method">{payment?.method || "Unknown"}</span>
+                          </div>
+                          <div className="payment-date">
+                            <i className="fas fa-calendar"></i>
+                            <span>{created ? new Date(created).toLocaleDateString() : "Unknown date"}</span>
+                          </div>
+                          <div className="payment-account">
+                            <i className="fas fa-user"></i>
+                            <span>{account}</span>
+                          </div>
                         </div>
-                        <div className="payment-date">
-                          <i className="fas fa-calendar"></i>
-                          <span>
-                            {payment?.created_at ? new Date(payment.created_at).toLocaleDateString() : "Unknown date"}
-                          </span>
-                        </div>
-                        <div className="payment-account">
-                          <i className="fas fa-user"></i>
-                          <span>{payment?.account || "Unknown account"}</span>
+                      </div>
+                      <div className="payment-status">
+                        <div className={`status-badge ${getStatusColor(payment?.status)}`}>
+                          <i className={`fas ${getStatusIcon(payment?.status)}`}></i>
+                          <span>{payment?.status || "Pending"}</span>
                         </div>
                       </div>
                     </div>
-                    <div className="payment-status">
-                      <div className={`status-badge ${getStatusColor(payment?.status)}`}>
-                        <i className={`fas ${getStatusIcon(payment?.status)}`}></i>
-                        <span>{payment?.status || "Pending"}</span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
             </div>
           )}
         </div>
@@ -369,29 +386,28 @@ const Payments = () => {
           <div className="info-icon">
             <i className="fas fa-info-circle"></i>
           </div>
-          <h3 className="info-title">Payment Information</h3>
         </div>
         <div className="info-content">
           <div className="info-item">
             <i className="fas fa-clock"></i>
-            <p>Withdrawal requests are processed within 24-48 hours</p>
+            <p>Withdrawal requests are processed within 24–48 hours.</p>
           </div>
           <div className="info-item">
             <i className="fas fa-dollar-sign"></i>
-            <p>Minimum withdrawal amount is $10.00</p>
+            <p>Minimum withdrawal amount is ${MIN_WITHDRAWAL.toFixed(2)}.</p>
           </div>
           <div className="info-item">
             <i className="fas fa-shield-alt"></i>
-            <p>All transactions are secure and encrypted</p>
+            <p>All transactions are secure and encrypted.</p>
           </div>
           <div className="info-item">
             <i className="fas fa-percentage"></i>
-            <p>No fees for PayPal withdrawals, small fees may apply for other methods</p>
+            <p>No fees for UPI; bank transfers may incur small fees.</p>
           </div>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Payments
+export default Payments;

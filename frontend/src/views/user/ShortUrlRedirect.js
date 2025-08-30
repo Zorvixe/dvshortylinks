@@ -1,7 +1,7 @@
 // ShortUrlRedirect.js
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function ShortUrlRedirect() {
   const { shortCode } = useParams();

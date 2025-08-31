@@ -622,7 +622,7 @@ const CopyrightSection = () => {
     <div className="copyright_section">
       <div className="container">
         <p className="copyright_text">
-          <span>Copyright &copy; {currentYear}</span> All Rights Reserved. Design by{" "}
+          <span>Copyright &copy; {currentYear}</span> All Rights Reserved. Designed, Developed & Maintained by{" "}
           <a href="https://www.zorvixetechnologies.com">Zorvixe Technologies</a>.
         </p>
       </div>

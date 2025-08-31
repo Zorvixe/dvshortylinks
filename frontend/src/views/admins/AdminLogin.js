@@ -2,6 +2,7 @@
 import { useState } from "react"
 import axios from "axios"
 import "./AdminLogin.css"
+import Logo from "../../assets/img/dv_logo.png"
 
 const AdminLogin = () => {
   const [username, setUsername] = useState("")
@@ -51,8 +52,8 @@ const AdminLogin = () => {
       <div className="admin-login-card-vad">
         <div className="admin-login-header-vad">
           <div className="admin-logo-vad">
-            <div className="logo-icon-vad">⚡</div>
-            <h1>Admin Portal</h1>
+            <div className="">            <img src={Logo} alt="DVSHORTYLINKS Logo" className="dv_logo_admin" />
+</div>
           </div>
           <p className="admin-subtitle-vad">
             {isRegisterMode ? "Create your admin account" : "Sign in to your admin account"}
@@ -140,7 +141,6 @@ const AdminLogin = () => {
               setPassword("")
             }}
           >
-            {isRegisterMode ? "Already have an account? Sign In" : "Don't have an account? Register"}
           </button>
         </div>
 

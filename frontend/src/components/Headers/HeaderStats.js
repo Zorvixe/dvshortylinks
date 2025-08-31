@@ -19,7 +19,10 @@ import "./HeaderStats.css";
 export default function HeaderStats() {
   const { user, loading: authLoading } = useAuth();
   const token = localStorage.getItem("token");
-  const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
+  const API_BASE_URL =
+    process.env.REACT_APP_API_URL || "https://api.dvshortylinks.com";
+    const SHORT_BASE =
+    process.env.REACT_APP_SHORT_BASE_URL || "https://go.dvshortylinks.com";
 
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -94,7 +97,7 @@ export default function HeaderStats() {
       const composed =
         data?.shortenedUrl ||
         data?.short_url ||
-        (data?.shortCode ? `${window.location.origin}/${data.shortCode}` : "");
+       (data?.shortCode ? `${SHORT_BASE}/${data.shortCode}` : "");
 
       if (res.ok && composed) {
         setShortResult(composed);
@@ -188,13 +191,6 @@ export default function HeaderStats() {
                   <p className="quk-card-subtitle">Paste your long URL, shorten, and copy.</p>
                 </div>
               </div>
-
-              {/* Notice */}
-              {notice.show && (
-                <div className={`quk-notice quk-notice-${notice.type}`} aria-live="polite">
-                  {notice.msg}
-                </div>
-              )}
 
               <form onSubmit={handleShorten} className="quk-form">
                 <div className="quk-input-group">

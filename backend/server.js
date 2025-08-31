@@ -3286,6 +3286,22 @@ async function serveAdPageAndRedirect(link, req, res) {
   <title>DVShortyLinks - Smart URL Shortener & Link Monetization (High CPM)</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Helvetica, Arial;
+            color: #333;
+            display: flex;
+            min-height: 100vh;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 20px;
+        }
         
         .wrap {
             max-width: 500px;
@@ -3294,7 +3310,6 @@ async function serveAdPageAndRedirect(link, req, res) {
             backdrop-filter: blur(5px);
             border-radius: 24px;
             padding: 32px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15), 0 15px 30px rgba(0, 0, 0, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.5);
             text-align: center;
             position: relative;
@@ -3323,7 +3338,7 @@ async function serveAdPageAndRedirect(link, req, res) {
             margin: 0 0 15px;
             font-size: 28px;
             font-weight: 800;
-            background: linear-gradient(45deg, #000000ff 0%, #2575fc 100%);
+            background: linear-gradient(45deg, #6a11cb 0%, #2575fc 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             position: relative;

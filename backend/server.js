@@ -3153,7 +3153,7 @@ app.get("/api/resolve/:shortCode", async (req, res) => {
     }
 
     const link = linkResult.rows[0]
-    
+
     // Check if link is hidden or expired
     if (link.is_hidden) {
       return res.status(403).json({ error: "This link is currently hidden" })
@@ -3163,7 +3163,7 @@ app.get("/api/resolve/:shortCode", async (req, res) => {
       return res.status(410).json({ error: "This link has expired" })
     }
 
-    res.json({ 
+    res.json({
       originalUrl: link.original_url,
       shortCode: link.short_code,
       title: link.title,
@@ -3227,7 +3227,7 @@ async function serveAdPageAndRedirect(link, req, res) {
     const country = await getCountryFromIP(ip);
     const cpmRates = await getCpmRates();
     const cpmRate = cpmRates[country] || cpmRates.DEFAULT || 0.01;
-    
+
     // Calculate earnings (per click)
     const earnings = cpmRate / 1000; // CPM is per 1000 views, so divide by 1000
 
@@ -3275,59 +3275,273 @@ async function serveAdPageAndRedirect(link, req, res) {
       ]);
     }
 
-   // Inside serveAdPageAndRedirect(link, req, res) AFTER your DB updates:
-const adMode = (process.env.AD_MODE || "NETWORK").toUpperCase();
-const safeUrl = String(link.original_url).replace(/"/g, "&quot;");
+    // Inside serveAdPageAndRedirect(link, req, res) AFTER your DB updates:
+    const adMode = (process.env.AD_MODE || "NETWORK").toUpperCase();
+    const safeUrl = String(link.original_url).replace(/"/g, "&quot;");
 
-const networkHtml = `<!doctype html>
+    const networkHtml = `<!doctype html>
 <html><head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Redirecting…</title>
-  <style>
-    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Helvetica,Arial;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;display:flex;min-height:100vh;align-items:center;justify-content:center;margin:0}
-    .wrap{max-width:480px;width:92%;background:rgba(255,255,255,.12);backdrop-filter:blur(10px);border-radius:18px;padding:28px;box-shadow:0 10px 30px rgba(0,0,0,.2)}
-    h1{margin:0 0 6px;font-size:22px}
-    .ad{background:#fff;color:#000;border-radius:12px;min-height:200px;display:flex;align-items:center;justify-content:center;margin:14px 0;padding:8px}
-    .meta{opacity:.9;font-size:14px;margin-top:6px}
-    .cta{display:flex;gap:10px;margin-top:14px}
-    .btn{flex:1;background:#ff4757;border:none;color:#fff;padding:12px 14px;border-radius:10px;font-weight:600;cursor:pointer}
-    .btn:hover{filter:brightness(1.07)}
-    .timer{font-size:14px;margin-top:6px}
-    a {color:#fff}
-  </style>
+  <title>DVShortyLinks - Smart URL Shortener & Link Monetization (High CPM)</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Helvetica, Arial;
+            background: linear-gradient(45deg, #ff9a9e 0%, #fad0c4 99%, #fad0c4 100%);
+            color: #333;
+            display: flex;
+            min-height: 100vh;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .wrap {
+            max-width: 500px;
+            width: 92%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(5px);
+            border-radius: 24px;
+            padding: 32px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15), 0 15px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .wrap::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+            transform: rotate(45deg);
+            animation: shine 6s infinite;
+            z-index: 0;
+        }
+        
+        @keyframes shine {
+            0% { left: -50%; }
+            100% { left: 150%; }
+        }
+        
+        h1 {
+            margin: 0 0 15px;
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(45deg, #6a11cb 0%, #2575fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .ad {
+            background: linear-gradient(135deg, #fdfcfb 0%, #e2d1c3 100%);
+            color: #5a4b41;
+            border-radius: 16px;
+            min-height: 220px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0;
+            padding: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+        }
+        
+        .ad::before {
+            content: 'AD';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.1);
+            color: rgba(0, 0, 0, 0.3);
+            font-size: 10px;
+            font-weight: bold;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+        
+        .meta {
+            opacity: 0.8;
+            font-size: 16px;
+            margin-top: 10px;
+            color: #555;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .cta {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .btn {
+            flex: 1;
+            background: linear-gradient(45deg, #6a11cb 0%, #2575fc 100%);
+            border: none;
+            color: #fff;
+            padding: 16px 20px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(37, 117, 252, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #2575fc 0%, #6a11cb 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(37, 117, 252, 0.4);
+        }
+        
+        .btn:hover::before {
+            opacity: 1;
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+        }
+        
+        .timer {
+            font-size: 16px;
+            margin-top: 15px;
+            color: #6a11cb;
+            font-weight: 600;
+            position: relative;
+            z-index: 1;
+        }
+        
+        a {
+            color: #2575fc;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+        }
+        
+        .ad-content {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .ad-icon {
+            font-size: 42px;
+            margin-bottom: 15px;
+            color: #6a11cb;
+        }
+        
+        .ad-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .ad-text {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.5;
+            max-width: 300px;
+        }
+        
+        .countdown {
+            font-weight: 800;
+            font-size: 18px;
+            color: #2575fc;
+        }
+        
+        .security-note {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 15px;
+            font-size: 14px;
+            color: #28a745;
+        }
+        
+        @media (max-width: 600px) {
+            .wrap {
+                padding: 24px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            .cta {
+                flex-direction: column;
+            }
+            
+            .btn {
+                padding: 14px;
+            }
+        }
+    </style>
 
   <!-- Google AdSense (optional) -->
-  ${
-    process.env.ADSENSE_CLIENT
-      ? `<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.ADSENSE_CLIENT}" crossorigin="anonymous"></script>`
-      : ""
-  }
+  ${process.env.ADSENSE_CLIENT
+        ? `<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.ADSENSE_CLIENT}" crossorigin="anonymous"></script>`
+        : ""
+      }
 </head><body>
   <div class="wrap">
     <h1>Getting your link ready…</h1>
     <div class="ad">
       <!-- Insert your ad tag below (choose ONE network) -->
       <!-- AdSense example -->
-      ${
-        process.env.ADSENSE_CLIENT && process.env.ADSENSE_SLOT
-          ? `<ins class="adsbygoogle" style="display:block" data-ad-client="${process.env.ADSENSE_CLIENT}" data-ad-slot="${process.env.ADSENSE_SLOT}" data-ad-format="auto" data-full-width-responsive="true"></ins>
+      ${process.env.ADSENSE_CLIENT && process.env.ADSENSE_SLOT
+        ? `<ins class="adsbygoogle" style="display:block" data-ad-client="${process.env.ADSENSE_CLIENT}" data-ad-slot="${process.env.ADSENSE_SLOT}" data-ad-format="auto" data-full-width-responsive="true"></ins>
              <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>`
-          : ""
+        : ""
       }
       <!-- Propeller example -->
-      ${
-        process.env.PROPELLER_ZONE_ID
-          ? `<script data-cfasync="false" async src="//upgulpinon.com/1?zoneid=${process.env.PROPELLER_ZONE_ID}"></script>`
-          : ""
+      ${process.env.PROPELLER_ZONE_ID
+        ? `<script data-cfasync="false" async src="//upgulpinon.com/1?zoneid=${process.env.PROPELLER_ZONE_ID}"></script>`
+        : ""
       }
-      ${
-        !process.env.ADSENSE_CLIENT && !process.env.PROPELLER_ZONE_ID
-          ? `<div style="text-align:center">
+      ${!process.env.ADSENSE_CLIENT && !process.env.PROPELLER_ZONE_ID
+        ? `<div style="text-align:center">
                <h3>Advertisement</h3>
                <p>Add your AdSense or Propeller tag in server env vars.</p>
              </div>`
-          : ""
+        : ""
       }
     </div>
 
@@ -3351,7 +3565,7 @@ const networkHtml = `<!doctype html>
   </script>
 </body></html>`;
 
-const quizHtml = `<!doctype html>
+    const quizHtml = `<!doctype html>
 <html><head>
   <meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Answer 3 quick questions</title>
@@ -3436,8 +3650,8 @@ const quizHtml = `<!doctype html>
   </script>
 </body></html>`;
 
-const adTemplate = adMode === "QUIZ" ? quizHtml : networkHtml;
-res.send(adTemplate);
+    const adTemplate = adMode === "QUIZ" ? quizHtml : networkHtml;
+    res.send(adTemplate);
 
 
   } catch (error) {
@@ -3534,11 +3748,11 @@ function showPasswordForm(link, res) {
 app.post("/api/track-ad-view", async (req, res) => {
   try {
     const { linkId, shortCode, timestamp } = req.body;
-    
+
     // You can implement ad view tracking here
     // This is where you'd integrate with your ad network
     logger.info(`Ad viewed for link ${linkId} (${shortCode}) at ${timestamp}`);
-    
+
     res.json({ success: true });
   } catch (error) {
     logger.error(`Ad tracking error: ${error.message}`);

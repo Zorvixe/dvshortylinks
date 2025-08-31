@@ -3572,4 +3572,7 @@ const startServer = async () => {
   }
 }
 
+// after you create `app`
+app.set('trust proxy', 1);
+
 startServer()

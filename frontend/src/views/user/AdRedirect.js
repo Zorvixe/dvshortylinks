@@ -5,8 +5,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import AdSlot from "../../AdSlot";
 
 const ADS_CLIENT = process.env.REACT_APP_ADSENSE_CLIENT;
-const ADS_SLOT   = process.env.REACT_APP_ADSENSE_SLOT;
-const ADS_TEST   = process.env.REACT_APP_ADSENSE_TEST === "true";
+const ADS_SLOT = process.env.REACT_APP_ADSENSE_SLOT;
+const ADS_TEST = process.env.REACT_APP_ADSENSE_TEST === "true";
 
 export default function AdRedirect() {
   const { slug } = useParams();
@@ -35,7 +35,17 @@ export default function AdRedirect() {
         boxShadow: "0 8px 24px rgba(0,0,0,0.06)", background: "#fff",
       }}>
         {ADS_CLIENT && ADS_SLOT ? (
-          <AdSlot client={ADS_CLIENT} slot={ADS_SLOT} test={ADS_TEST} />
+          // somewhere in a page/component
+
+          <AdSlot
+            client={process.env.REACT_APP_ADSENSE_CLIENT || "ca-pub-4814003097452326"}
+            slot={process.env.REACT_APP_ADSENSE_SLOT || "4807389297"}
+            format="auto"
+            fullWidth
+            test={process.env.REACT_APP_ADSENSE_TEST === "true"} // adds data-adtest="on"
+            style={{ minHeight: 250 }}
+          />
+
         ) : (
           <p style={{ color: "#6b7280", margin: 0 }}>
             Ad is not configured. Set REACT_APP_ADSENSE_CLIENT and REACT_APP_ADSENSE_SLOT.

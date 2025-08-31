@@ -1,4 +1,4 @@
-// src/views/user/AdRedirect.jsx
+// Alternative implementation with setInterval
 "use client";
 import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
@@ -11,41 +11,48 @@ const ADS_TEST = process.env.REACT_APP_ADSENSE_TEST === "true";
 export default function AdRedirect() {
   const { slug } = useParams();
   const [countdown, setCountdown] = useState(10);
+  const [isRedirecting, setIsRedirecting] = useState(false);
   const navigate = useNavigate();
   const timerRef = useRef(null);
 
-  useEffect(() => {
+  // Handle redirect
+  const handleRedirect = () => {
+    if (isRedirecting) return;
+    setIsRedirecting(true);
+    
     // Clear any existing timer
     if (timerRef.current) {
       clearInterval(timerRef.current);
+      timerRef.current = null;
     }
+    
+    navigate(`/final-redirect/${slug}`);
+  };
 
-    // Set up new timer
+  // Handle skip
+  const handleSkip = () => {
+    handleRedirect();
+  };
+
+  // Setup countdown timer
+  useEffect(() => {
     timerRef.current = setInterval(() => {
       setCountdown(prev => {
         if (prev <= 1) {
-          clearInterval(timerRef.current);
-          navigate(`/final-redirect/${slug}`);
+          handleRedirect();
           return 0;
         }
         return prev - 1;
       });
     }, 1000);
 
-    // Clean up on unmount
+    // Cleanup on unmount
     return () => {
       if (timerRef.current) {
         clearInterval(timerRef.current);
       }
     };
-  }, [slug, navigate]);
-
-  const handleSkip = () => {
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
-    }
-    navigate(`/final-redirect/${slug}`);
-  };
+  }, []); // Empty dependency array - timer setup only once
 
   return (
     <div style={styles.container}>
@@ -93,18 +100,21 @@ export default function AdRedirect() {
           
           <button 
             onClick={handleSkip}
-            style={styles.skipButton}
-            onMouseOver={(e) => e.target.style.backgroundColor = '#4F46E5'}
-            onMouseOut={(e) => e.target.style.backgroundColor = '#6366F1'}
+            style={{
+              ...styles.skipButton,
+              ...(isRedirecting && { opacity: 0.7, cursor: 'not-allowed' })
+            }}
+            onMouseOver={(e) => !isRedirecting && (e.target.style.backgroundColor = '#4F46E5')}
+            onMouseOut={(e) => !isRedirecting && (e.target.style.backgroundColor = '#6366F1')}
+            disabled={isRedirecting}
           >
-            Skip Ad
+            {isRedirecting ? 'Redirecting...' : 'Skip Ad'}
           </button>
         </div>
       </div>
     </div>
   );
 }
-
 // Styles
 const styles = {
   container: {

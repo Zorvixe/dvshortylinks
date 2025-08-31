@@ -65,7 +65,7 @@ ReactDOM.render(
       <PageViewTracker />
       <Routes>
         {/* Public */}
-  {/*    <Route path="/:shortCode" element={<ShortUrlRedirect />} /> */}
+      <Route path="/:shortCode" element={<ShortUrlRedirect />} /> 
         <Route path="/go/:slug" element={<AdRedirect />} />
         <Route path="/final-redirect/:slug" element={<FinalRedirect />} />
         <Route path="/auth/*" element={<Auth />} />

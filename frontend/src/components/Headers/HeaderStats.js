@@ -274,7 +274,7 @@ export default function HeaderStats() {
               <p className="quk-cta-text">📢 Join our community for updates & support</p>
               <div className="quk-cta-buttons">
                 <a
-                  href="https://t.me/DvShortyLinks_Help"
+                  href="https://t.me/DvShortyLinkscom"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="quk-telegram-btn"
@@ -283,7 +283,7 @@ export default function HeaderStats() {
                   Telegram
                 </a>
                 <a
-                  href="https://wa.me/"
+                  href="https://whatsapp.com/channel/0029VbBOrsJKwqSYuEXq5e0p"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="quk-whatsapp-btn"

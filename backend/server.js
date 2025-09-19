@@ -3275,17 +3275,18 @@ async function serveAdPageAndRedirect(link, req, res) {
       ]);
     }
 
-    // Inside serveAdPageAndRedirect(link, req, res) AFTER your DB updates:
+    // Inside serveAdPageAndRedirect function in server.js
     const adMode = (process.env.AD_MODE || "NETWORK").toUpperCase();
     const safeUrl = String(link.original_url).replace(/"/g, "&quot;");
+    const adsterraKey = process.env.ADSTERRA_KEY || "3893808e3f04313ac053931b10998967";
 
     const networkHtml = `<!doctype html>
 <html><head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>DVShortyLinks - Smart URL Shortener & Link Monetization (High CPM)</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
         * {
             margin: 0;
             padding: 0;
@@ -3512,37 +3513,25 @@ async function serveAdPageAndRedirect(link, req, res) {
             }
         }
     </style>
-
-  <!-- Google AdSense (optional) -->
-  ${process.env.ADSENSE_CLIENT
-        ? `<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.ADSENSE_CLIENT}" crossorigin="anonymous"></script>`
-        : ""
-      }
+<!-- Adsterra Ad Script -->
+  <script type="text/javascript">
+    atOptions = {
+      'key' : '${adsterraKey}',
+      'format' : 'iframe',
+      'height' : 250,
+      'width' : 300,
+      'params' : {}
+    };
+  </script>
+  <script type="text/javascript" src="//www.highperformanceformat.com/${adsterraKey}/invoke.js"></script>
 </head><body>
   <div class="wrap">
     <h1>Getting your link ready…</h1>
     <div class="ad">
-      <!-- Insert your ad tag below (choose ONE network) -->
-      <!-- AdSense example -->
-      ${process.env.ADSENSE_CLIENT && process.env.ADSENSE_SLOT
-        ? `<ins class="adsbygoogle" style="display:block" data-ad-client="${process.env.ADSENSE_CLIENT}" data-ad-slot="${process.env.ADSENSE_SLOT}" data-ad-format="auto" data-full-width-responsive="true"></ins>
-             <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>`
-        : ""
-      }
-      <!-- Propeller example -->
-      ${process.env.PROPELLER_ZONE_ID
-        ? `<script data-cfasync="false" async src="//upgulpinon.com/1?zoneid=${process.env.PROPELLER_ZONE_ID}"></script>`
-        : ""
-      }
-      ${!process.env.ADSENSE_CLIENT && !process.env.PROPELLER_ZONE_ID
-        ? `<div style="text-align:center">
-               <h3>Advertisement</h3>
-               <p>Add your AdSense or Propeller tag in server env vars.</p>
-             </div>`
-        : ""
-      }
+      <!-- Adsterra Ad Container -->
+      <div id="container-${adsterraKey}"></div>
     </div>
-
+    
     <div class="meta">Please wait while we redirect you.</div>
     <div class="timer" id="t">Redirecting in <b>10</b>s</div>
     <div class="cta">
@@ -3552,7 +3541,7 @@ async function serveAdPageAndRedirect(link, req, res) {
   </div>
 
   <script>
-    // Track view (your endpoint already exists)
+    // Track view
     fetch('/api/track-ad-view',{method:'POST',headers:{'Content-Type':'application/json'},
       body: JSON.stringify({linkId:'${link.id}',shortCode:'${link.short_code}',timestamp:new Date().toISOString()})
     });

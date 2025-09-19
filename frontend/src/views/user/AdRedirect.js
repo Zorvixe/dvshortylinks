@@ -1,12 +1,9 @@
-// Alternative implementation with setInterval
 "use client";
 import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import AdSlot from "../../AdSlot";
 
-const ADS_CLIENT = process.env.REACT_APP_ADSENSE_CLIENT;
-const ADS_SLOT = process.env.REACT_APP_ADSENSE_SLOT;
-const ADS_TEST = process.env.REACT_APP_ADSENSE_TEST === "true";
+// Adsterra configuration
+const ADSTERRA_KEY = process.env.REACT_APP_ADSTERRA_KEY || "3893808e3f04313ac053931b10998967";
 
 export default function AdRedirect() {
   const { slug } = useParams();
@@ -14,6 +11,7 @@ export default function AdRedirect() {
   const [isRedirecting, setIsRedirecting] = useState(false);
   const navigate = useNavigate();
   const timerRef = useRef(null);
+  const adContainerRef = useRef(null);
 
   // Handle redirect
   const handleRedirect = () => {
@@ -34,6 +32,40 @@ export default function AdRedirect() {
     handleRedirect();
   };
 
+  // Load Adsterra ad script
+  useEffect(() => {
+    // Create the Adsterra script
+    const script = document.createElement('script');
+    script.innerHTML = `
+      atOptions = {
+        'key' : '${ADSTERRA_KEY}',
+        'format' : 'iframe',
+        'height' : 250,
+        'width' : 300,
+        'params' : {}
+      };
+    `;
+    
+    // Create the second script that loads the ad
+    const script2 = document.createElement('script');
+    script2.src = "//www.highperformanceformat.com/3893808e3f04313ac053931b10998967/invoke.js";
+    script2.async = true;
+    
+    // Add scripts to document
+    document.head.appendChild(script);
+    document.head.appendChild(script2);
+    
+    return () => {
+      // Cleanup if component unmounts
+      if (document.head.contains(script)) {
+        document.head.removeChild(script);
+      }
+      if (document.head.contains(script2)) {
+        document.head.removeChild(script2);
+      }
+    };
+  }, []);
+
   // Setup countdown timer
   useEffect(() => {
     timerRef.current = setInterval(() => {
@@ -52,7 +84,7 @@ export default function AdRedirect() {
         clearInterval(timerRef.current);
       }
     };
-  }, []); // Empty dependency array - timer setup only once
+  }, []);
 
   return (
     <div style={styles.container}>
@@ -62,26 +94,9 @@ export default function AdRedirect() {
           <p style={styles.subtitle}>Thank you for supporting our free service</p>
         </div>
         
-        <div style={styles.adContainer}>
-          {ADS_CLIENT && ADS_SLOT ? (
-            <AdSlot
-              client={ADS_CLIENT}
-              slot={ADS_SLOT}
-              format="auto"
-              fullWidth
-              test={ADS_TEST}
-              style={styles.adSlot}
-            />
-          ) : (
-            <div style={styles.placeholderAd}>
-              <div style={styles.placeholderIcon}>
-                <i className="fas fa-ad" style={{fontSize: '32px', color: '#6366F1'}}></i>
-              </div>
-              <p style={styles.placeholderText}>
-                Ad is not configured. Set REACT_APP_ADSENSE_CLIENT and REACT_APP_ADSENSE_SLOT.
-              </p>
-            </div>
-          )}
+        <div style={styles.adContainer} ref={adContainerRef}>
+          {/* Adsterra ad will be injected here */}
+          <div id="container-3893808e3f04313ac053931b10998967"></div>
         </div>
         
         <div style={styles.countdownSection}>
@@ -115,6 +130,7 @@ export default function AdRedirect() {
     </div>
   );
 }
+
 // Styles
 const styles = {
   container: {
@@ -152,30 +168,11 @@ const styles = {
     width: '100%',
     margin: '0 auto 24px',
     boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',
-    backgroundColor: '#fff'
-  },
-  adSlot: {
+    backgroundColor: '#fff',
     minHeight: '250px',
-    margin: '0 auto',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center'
-  },
-  placeholderAd: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: '250px',
-    padding: '20px'
-  },
-  placeholderIcon: {
-    marginBottom: '16px'
-  },
-  placeholderText: {
-    color: '#6b7280',
-    margin: '0',
-    fontSize: '14px'
   },
   countdownSection: {
     padding: '16px'

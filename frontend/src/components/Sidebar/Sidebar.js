@@ -157,6 +157,8 @@ export default function Sidebar() {
                 {/* Sub-menu items */}
                 {isToolsOpen && (
                   <ul className="ml-3">
+
+
                     <li className="py-1">
                       <Link
                         to="/admin/ShortenUrl"
@@ -167,9 +169,10 @@ export default function Sidebar() {
                             : "text-blueGray-500 hover:text-blueGray-700")
                         }
                       >
-                        <i className="fas fa-link mr-2 text-xs"></i>  Shorten URL
+                        <i className="fas fa-link mr-2 text-xs"></i>   Shorten URL
                       </Link>
                     </li>
+
 
                     <li className="py-1">
                       <Link
@@ -210,15 +213,15 @@ export default function Sidebar() {
                   onClick={() => setIsManageLinksOpen(!isManageLinksOpen)}
                   className={
                     "text-xs uppercase py-3 font-bold block w-full text-left " +
-                    (window.location.href.includes("/admin/ShortenUrl")
+                    (window.location.href.includes("/admin/manageLinks")
                       ? "text-lightBlue-500"
                       : "text-blueGray-700 hover:text-blueGray-500")
                   }
                 >
                   <i
                     className={
-                      "fas fa-tools mr-2 text-sm " +
-                      (window.location.href.includes("/admin/ShortenUrl")
+                      "fas fa-link mr-2 text-sm " +
+                      (window.location.href.includes("/admin/manageLinks")
                         ? "opacity-75"
                         : "text-blueGray-300")
                     }
@@ -279,47 +282,80 @@ export default function Sidebar() {
               </li>
 
 
-              <li className="py-1">
-                <Link
-                  to="/admin/myLinks"
-                  className={
-                    "text-sm block " +
-                    (window.location.href.includes("/admin/myLinks")
-                      ? "text-lightBlue-500"
-                      : "text-blueGray-500 hover:text-blueGray-700")
-                  }
-                >
-                  <i className="fas fa-user mr-2 text-xs"></i>  My Links
-                </Link>
-              </li>
 
-
-
-              <li className="py-1">
-                <Link
-                  to="/admin/referrals"
-                  className={
-                    "text-sm block " +
-                    (window.location.href.includes("/admin/referrals")
-                      ? "text-lightBlue-500"
-                      : "text-blueGray-500 hover:text-blueGray-700")
-                  }
-                >
-                  <i className="fas fa-user-friends mr-2 text-xs"></i>   Referrals
-                </Link>
-              </li>
               <li className="items-center">
                 <Link
                   className={
                     "text-xs uppercase py-3 font-bold block " +
-                    (window.location.href.includes("/admin/Statistics")
-                      ? "text-lightBlue-500"
-                      : "text-blueGray-500 hover:text-blueGray-700")
+                    (window.location.href.indexOf("/admin/myLinks") !== -1
+                      ? "text-lightBlue-500 hover:text-lightBlue-600"
+                      : "text-blueGray-700 hover:text-blueGray-500")
                   }
+                  to="/admin/myLinks"
                 >
-                  <i className="fas fa-chart-bar mr-2 text-xs"></i>   Statistics
+                  <i
+                    className={
+                      "fas fa-user mr-2 text-sm " +
+                      (window.location.href.indexOf("/admin/myLinks") !== -1
+                        ? "opacity-75"
+                        : "text-blueGray-300")
+                    }
+                  ></i>{" "}
+                  My Links
                 </Link>
               </li>
+
+
+
+
+
+              <li className="items-center">
+                <Link
+                  className={
+                    "text-xs uppercase py-3 font-bold block " +
+                    (window.location.href.indexOf("/admin/referrals") !== -1
+                      ? "text-lightBlue-500 hover:text-lightBlue-600"
+                      : "text-blueGray-700 hover:text-blueGray-500")
+                  }
+                  to="/admin/referrals"
+                >
+                  <i
+                    className={
+                      "fas fa-user-friends mr-2 text-sm " +
+                      (window.location.href.indexOf("/admin/referrals") !== -1
+                        ? "opacity-75"
+                        : "text-blueGray-300")
+                    }
+                  ></i>{" "}
+                  Referrals
+                </Link>
+              </li>
+
+
+
+
+              <li className="items-center">
+                <Link
+                  className={
+                    "text-xs uppercase py-3 font-bold block " +
+                    (window.location.href.indexOf("/admin/Statistics") !== -1
+                      ? "text-lightBlue-500 hover:text-lightBlue-600"
+                      : "text-blueGray-700 hover:text-blueGray-500")
+                  }
+                  to="/admin/Statistics"
+                >
+                  <i
+                    className={
+                      "fas fa-chart-bar mr-2 text-sm " +
+                      (window.location.href.indexOf("/admin/Statistics") !== -1
+                        ? "opacity-75"
+                        : "text-blueGray-300")
+                    }
+                  ></i>{" "}
+                  Statistics
+                </Link>
+              </li>
+
 
               <li className="items-center">
                 <Link
@@ -342,6 +378,8 @@ export default function Sidebar() {
                   Withdrawl
                 </Link>
               </li>
+
+
             </ul>
 
 

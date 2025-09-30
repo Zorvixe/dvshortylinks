@@ -302,7 +302,6 @@ const Statistics = () => {
 
       <div className="flex flex-wrap">
         <div className="w-full xl:w-12 px-4">
-          <CardBarChart />
         </div>
       </div>
     </div>

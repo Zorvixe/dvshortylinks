@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import "../../assets/Statistics.css";
-import CardBarChart from "../../components/Cards/CardBarChart.js";
 
 const n = (v) => {
   const x = Number(v);

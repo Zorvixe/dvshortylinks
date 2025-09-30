@@ -146,7 +146,7 @@ const Payments = () => {
       <div className="payments-container">
         <div className="loading-container">
           <div className="loading-spinner"></div>
-          <p>Loading payment information...</p>
+          <p>Loading Withdrawal information...</p>
         </div>
       </div>
     );
@@ -180,7 +180,7 @@ const Payments = () => {
       <div className="page-header">
         <h1 className="page-title">
           <i className="fas fa-credit-card"></i>
-          Payments
+          Withdrawal
         </h1>
         <p className="page-subtitle">Manage your earnings and withdrawal requests</p>
       </div>

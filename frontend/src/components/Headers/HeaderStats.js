@@ -21,7 +21,7 @@ export default function HeaderStats() {
   const token = localStorage.getItem("token");
   const API_BASE_URL =
     process.env.REACT_APP_API_URL || "https://api.dvshortylinks.com";
-    const SHORT_BASE =
+  const SHORT_BASE =
     process.env.REACT_APP_SHORT_BASE_URL || "https://go.dvshortylinks.com";
 
   const [dashboardData, setDashboardData] = useState(null);
@@ -97,7 +97,7 @@ export default function HeaderStats() {
       const composed =
         data?.shortenedUrl ||
         data?.short_url ||
-       (data?.shortCode ? `${SHORT_BASE}/${data.shortCode}` : "");
+        (data?.shortCode ? `${SHORT_BASE}/${data.shortCode}` : "");
 
       if (res.ok && composed) {
         setShortResult(composed);
@@ -283,13 +283,13 @@ export default function HeaderStats() {
                   Telegram
                 </a>
                 <a
-                  href="https://whatsapp.com/channel/0029VbBOrsJKwqSYuEXq5e0p"
+                  href="https://t.me/DvShortyLinks_Help"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="quk-whatsapp-btn"
+                  className="quk-telegram-btn"
                 >
-                  <i className="fab fa-whatsapp"></i>
-                  WhatsApp
+                  <i className="fab fa-telegram"></i>
+                  Telegram
                 </a>
               </div>
             </div>

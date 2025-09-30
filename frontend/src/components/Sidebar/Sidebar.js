@@ -9,9 +9,11 @@ import UserDropdown from "components/Dropdowns/UserDropdown.js";
 
 export default function Sidebar() {
   const [isToolsOpen, setIsToolsOpen] = useState(false);
+  const [isManageLinksOpen, setIsManageLinksOpen] = useState(false);
+
 
   const [collapseShow, setCollapseShow] = React.useState("hidden");
-    const navigate = useNavigate();
+  const navigate = useNavigate();
   const handleLogout = (e) => {
     e.preventDefault();
     localStorage.removeItem("adminToken");
@@ -36,14 +38,14 @@ export default function Sidebar() {
             to="/admin/dashboard"
           >
             <img src={logo} className="dv_logo_admin" /> <h1
-            to="/admin/dashboard"
-            className="hidden md:block text-left md:pb-2 text-blueGray-600 mr-0 whitespace-nowrap text-sm uppercase font-bold p-4 px-0"
-          >
-            DVSHORTYLINKS
-          </h1>
+              to="/admin/dashboard"
+              className="hidden md:block text-left md:pb-2 text-blueGray-600 mr-0 whitespace-nowrap text-sm uppercase font-bold p-4 px-0"
+            >
+              DVSHORTYLINKS
+            </h1>
 
           </Link>
-         
+
 
           {/* User */}
           <ul className="md:hidden items-center flex flex-wrap list-none">
@@ -168,6 +170,69 @@ export default function Sidebar() {
                         <i className="fas fa-link mr-2 text-xs"></i>  Shorten URL
                       </Link>
                     </li>
+
+                    <li className="py-1">
+                      <Link
+                        to="/admin/api"
+                        className={
+                          "text-sm block " +
+                          (window.location.href.includes("/admin/api")
+                            ? "text-lightBlue-500"
+                            : "text-blueGray-500 hover:text-blueGray-700")
+                        }
+                      >
+                        <i className="fas fa-code mr-2 text-xs"></i>   Api
+                      </Link>
+                    </li>
+
+                    <li className="py-1">
+                      <Link
+                        to="/admin/massshrinker"
+                        className={
+                          "text-sm block " +
+                          (window.location.href.includes("/admin/massshrinker")
+                            ? "text-lightBlue-500"
+                            : "text-blueGray-500 hover:text-blueGray-700")
+                        }
+                      >
+                        <i className="fas fa-compress-alt mr-2 text-xs"></i>   Mass Shrinker
+                      </Link>
+                    </li>
+
+
+                  </ul>
+                )}
+              </li>
+
+
+              <li className="items-center">
+                <button
+                  onClick={() => setIsManageLinksOpen(!isManageLinksOpen)}
+                  className={
+                    "text-xs uppercase py-3 font-bold block w-full text-left " +
+                    (window.location.href.includes("/admin/ShortenUrl")
+                      ? "text-lightBlue-500"
+                      : "text-blueGray-700 hover:text-blueGray-500")
+                  }
+                >
+                  <i
+                    className={
+                      "fas fa-tools mr-2 text-sm " +
+                      (window.location.href.includes("/admin/ShortenUrl")
+                        ? "opacity-75"
+                        : "text-blueGray-300")
+                    }
+                  ></i>{" "}
+                  Manage Links
+                  <i
+                    className={`fas fa-chevron-${isManageLinksOpen ? "up" : "down"} float-right ml-3 mt-1`}
+                  ></i>
+                </button>
+
+                {/* Sub-menu items */}
+                {isManageLinksOpen && (
+                  <ul className="ml-3">
+
                     <li className="py-1">
                       <Link
                         to="/admin/manageLinks"
@@ -183,19 +248,6 @@ export default function Sidebar() {
                     </li>
                     <li className="py-1">
                       <Link
-                        to="/admin/myLinks"
-                        className={
-                          "text-sm block " +
-                          (window.location.href.includes("/admin/myLinks")
-                            ? "text-lightBlue-500"
-                            : "text-blueGray-500 hover:text-blueGray-700")
-                        }
-                      >
-                        <i className="fas fa-user mr-2 text-xs"></i>  My Links
-                      </Link>
-                    </li>
-                    <li className="py-1">
-                      <Link
                         to="/admin/allLinks"
                         className={
                           "text-sm block " +
@@ -207,19 +259,7 @@ export default function Sidebar() {
                         <i className="fas fa-list mr-2 text-xs"></i>  All Links
                       </Link>
                     </li>
-                    <li className="py-1">
-                      <Link
-                        to="/admin/api"
-                        className={
-                          "text-sm block " +
-                          (window.location.href.includes("/admin/api")
-                            ? "text-lightBlue-500"
-                            : "text-blueGray-500 hover:text-blueGray-700")
-                        }
-                      >
-                        <i className="fas fa-code mr-2 text-xs"></i>   Api
-                      </Link>
-                    </li>
+
                     <li className="py-1">
                       <Link
                         to="/admin/hiddenlinks"
@@ -232,45 +272,53 @@ export default function Sidebar() {
                       >
                         <i className="fas fa-eye-slash mr-2 text-xs"></i>   Hidden Links
                       </Link>
-                    </li> <li className="py-1">
-                      <Link
-                        to="/admin/massshrinker"
-                        className={
-                          "text-sm block " +
-                          (window.location.href.includes("/admin/massshrinker")
-                            ? "text-lightBlue-500"
-                            : "text-blueGray-500 hover:text-blueGray-700")
-                        }
-                      >
-                        <i className="fas fa-compress-alt mr-2 text-xs"></i>   Mass Shrinker
-                      </Link>
-                    </li>  <li className="py-1">
-                      <Link
-                        to="/admin/referrals"
-                        className={
-                          "text-sm block " +
-                          (window.location.href.includes("/admin/referrals")
-                            ? "text-lightBlue-500"
-                            : "text-blueGray-500 hover:text-blueGray-700")
-                        }
-                      >
-                        <i className="fas fa-user-friends mr-2 text-xs"></i>   Referrals
-                      </Link>
-                    </li> <li className="py-1">
-                      <Link
-                        to="/admin/Statistics"
-                        className={
-                          "text-sm block " +
-                          (window.location.href.includes("/admin/Statistics")
-                            ? "text-lightBlue-500"
-                            : "text-blueGray-500 hover:text-blueGray-700")
-                        }
-                      >
-                        <i className="fas fa-chart-bar mr-2 text-xs"></i>   Statistics
-                      </Link>
                     </li>
+
                   </ul>
                 )}
+              </li>
+
+
+              <li className="py-1">
+                <Link
+                  to="/admin/myLinks"
+                  className={
+                    "text-sm block " +
+                    (window.location.href.includes("/admin/myLinks")
+                      ? "text-lightBlue-500"
+                      : "text-blueGray-500 hover:text-blueGray-700")
+                  }
+                >
+                  <i className="fas fa-user mr-2 text-xs"></i>  My Links
+                </Link>
+              </li>
+
+
+
+              <li className="py-1">
+                <Link
+                  to="/admin/referrals"
+                  className={
+                    "text-sm block " +
+                    (window.location.href.includes("/admin/referrals")
+                      ? "text-lightBlue-500"
+                      : "text-blueGray-500 hover:text-blueGray-700")
+                  }
+                >
+                  <i className="fas fa-user-friends mr-2 text-xs"></i>   Referrals
+                </Link>
+              </li>
+              <li className="items-center">
+                <Link
+                  className={
+                    "text-xs uppercase py-3 font-bold block " +
+                    (window.location.href.includes("/admin/Statistics")
+                      ? "text-lightBlue-500"
+                      : "text-blueGray-500 hover:text-blueGray-700")
+                  }
+                >
+                  <i className="fas fa-chart-bar mr-2 text-xs"></i>   Statistics
+                </Link>
               </li>
 
               <li className="items-center">
@@ -291,7 +339,7 @@ export default function Sidebar() {
                         : "text-blueGray-300")
                     }
                   ></i>{" "}
-                  Payments
+                  Withdrawl
                 </Link>
               </li>
             </ul>
